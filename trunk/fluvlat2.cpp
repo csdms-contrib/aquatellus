@@ -22,8 +22,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////////////////
 #include "fluv_lat.h"
-#include "nr.h"
-#include "nrutil.h"
+#include "Nr.h"
+#include "Nrutil.h"
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ double * calculate_asymmetry(flowpath * current_flowpath, double * curvature)
 		range = (max_curvature - min_curvature);
 
 	j=0;
-	for (i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++) 
+	for (flowpath::iterator i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++) 
 		{
 
 			asymmetry[j] = ((curvature[j] - max_curvature)+(curvature[j]-min_curvature))/range;
@@ -573,7 +573,7 @@ void fluv_lat(flowpath* current_flowpath,flowpath::iterator coastline_cell_index
 		sum = 0;
 
 		int p =1;
-		for(l=i->col+1; l>lat_width_r;l--, p++)
+		for(int l=i->col+1; l>lat_width_r;l--, p++)
 		{
 
 			l_scale[p]=(double)(i->col-l)/(L_fluv);
