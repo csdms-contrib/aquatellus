@@ -1,10 +1,11 @@
 #include <math.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include "main.h"
 #include "flowpath.h"
-#include "space.h"
+#include "Space.h"
 
+using namespace std;
 
 /****************************************************************
  SWITCH	: this function determines whether a switch in the river or delta
