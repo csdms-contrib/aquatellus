@@ -23,5 +23,4 @@ extern double climate_factor;
 // globals for erosion and sedimentation calculations
 extern int coastline_cell;
 
-#endif _MAIN_H_
-
+#endif  /* _MAIN_H_ */

@@ -24,4 +24,3 @@ extern double climate_factor;
 extern int coastline_cell;
 
 #endif
-

@@ -35,41 +35,51 @@
 // The first derivatives of flowpath are needed for the calculation of the curvature;
 ///////////////////////////////////////////////////////////////////////
 
-double* calculate_firstder(flowpath* current_flowpath)
+double *
+calculate_firstder (flowpath * current_flowpath)
 {
-	double* firstder;
-	if ((firstder=(double*)calloc(current_flowpath->size (),sizeof(double)))==NULL)
-		printf("error in initializing firstder array");
+  double *firstder;
+  if ((firstder =
+       (double *) calloc (current_flowpath->size (),
+                          sizeof (double))) == NULL)
+    printf ("error in initializing firstder array");
 
-	int j=0;
-	for (flowpath::iterator i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++) {	
-		if (j == 0) {
-			// boundary condition for begin of input range, when the step backward
-			//values of ya are not known 
-			firstder[j]=0.0;
-		} else if (i != current_flowpath->end()) {
-			// boundary condition for end of input range, when the step forward
-			//values of ya are not known anymore
-			flowpath::iterator prev = i;
-			prev--;
-			flowpath::iterator next = i;
-			next++;
-			if (next != current_flowpath->end ()) 
-			{
-				firstder [j] = ((i->col - prev->col) / (i->row - prev->row) + (next->col - i->col) / (next->row - i->row)) / 2;
-			} 
-			else 
-			{
-				if ((i->row == prev->row)||(next->row == i->row))
-					firstder[j] = firstder[j - 1]; // Not strictly the first derivative
-				else 
-					firstder[j] = ((i->col - prev->col) / (i->row - prev->row)) / 2;
-			}
-		}
-			
-	}
+  int j = 0;
+  for (flowpath::iterator i = current_flowpath->begin ();
+       i != current_flowpath->end (); i++, j++)
+  {
+    if (j == 0)
+    {
+      // boundary condition for begin of input range, when the step backward
+      //values of ya are not known 
+      firstder[j] = 0.0;
+    }
+    else if (i != current_flowpath->end ())
+    {
+      // boundary condition for end of input range, when the step forward
+      //values of ya are not known anymore
+      flowpath::iterator prev = i;
+      prev--;
+      flowpath::iterator next = i;
+      next++;
+      if (next != current_flowpath->end ())
+      {
+        firstder[j] =
+          ((i->col - prev->col) / (i->row - prev->row) +
+           (next->col - i->col) / (next->row - i->row)) / 2;
+      }
+      else
+      {
+        if ((i->row == prev->row) || (next->row == i->row))
+          firstder[j] = firstder[j - 1];        // Not strictly the first derivative
+        else
+          firstder[j] = ((i->col - prev->col) / (i->row - prev->row)) / 2;
+      }
+    }
 
-	return firstder;
+  }
+
+  return firstder;
 }
 
 
@@ -85,101 +95,113 @@ double* calculate_firstder(flowpath* current_flowpath)
 //boundary condition for a natural spline, with zero derivative on that boundary
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-double * spline(flowpath* current_flowpath, double* firstder)
+double *
+spline (flowpath * current_flowpath, double *firstder)
 {
-	int k, np;
-	double p, qn, sig, un, *u;
-	np = current_flowpath->size();
-	u = new double [np];
+  int k, np;
+  double p, qn, sig, un, *u;
+  np = current_flowpath->size ();
+  u = new double[np];
 
-	double* y2;
-	if ((y2=(double*)calloc(current_flowpath->size (),sizeof(double)))==NULL)
-		printf("error in initializing secder array");
-
-
-	flowpath::iterator i = current_flowpath->begin ();
-	int j = 0;
-	if (firstder[0] > 0.99e30)
-		{
-			y2[0]=u[0]=0.0;
-			// the lower boundary is set to natural
-			// or else to specified first derivative
-		}
-	else
-		{
-			flowpath::iterator next = i;
-			next++;
-
-			y2[0] = -0.5;
-			
-			if (i->row == next->row)
-			
-				u[0] = (3.0 /(0.5)) *((next->col - i->col)/(0.5)-firstder[j]);
-			else
-				u[0] = (3.0 /(next->row - i->row)) *((next->col - i->col)/(next->row-i->row)-firstder[j]);
-		}
-
-	// this is the decompositional loop of the tridiagonal algorithm. y2 and u
-	// are used for temporary storage of the decomposed factors
-	for (i++,j++; i != current_flowpath->end (); i++, j++)
-	{
-		flowpath::iterator prev = i;
-		prev--;
-		flowpath::iterator next = i;
-		next++;
-
-		if (i != current_flowpath->end()) 
-			{
-		
-				if ((i->col == prev->col) || (i->col ==next->col)||(next->row==prev->col))
-				{
-					
-					y2[j] = 1e029;
-				}
-
-				else
-				{
-					sig = (i->row - prev->row) / (next->row - prev->col); 
-					p = sig * y2[j-1] + 2.0;
-					y2[j] = (sig - 1.0) /p;
-					
-					if ((i->row == next->row)||(i->row == prev->row))
-						u[j] = ( next->col - i->col)/ (0.5) - (i->col - prev->col)/ (0.5);
-
-					else
-						u[j] = (( next->col - i->col)/ (next->row - i->row)) - ((i->col - prev->col)/ (i->row - prev->row));
-				
-					u[j] = (6.0*u[j]) / (next->row - prev->row) - sig*u[j-1]/p;
-				}
-
-			}
+  double *y2;
+  if ((y2 =
+       (double *) calloc (current_flowpath->size (),
+                          sizeof (double))) == NULL)
+    printf ("error in initializing secder array");
 
 
-		else 
-			{
+  flowpath::iterator i = current_flowpath->begin ();
+  int j = 0;
+  if (firstder[0] > 0.99e30)
+  {
+    y2[0] = u[0] = 0.0;
+    // the lower boundary is set to natural
+    // or else to specified first derivative
+  }
+  else
+  {
+    flowpath::iterator next = i;
+    next++;
 
-			flowpath::iterator prev2 = prev;
-			prev2--;
+    y2[0] = -0.5;
 
-			if (firstder[np] >0.99e30)
-				qn=un=0.0;
-				else 
-					{
-						qn=0.5;
-						u[np-1] = (3.0/(prev->row - prev2->row))*(firstder[np]-(prev->col -prev2->col)/(prev->row-prev2->row));
-					}
-				y2[np-1] = (un-qn*u[np-2]) / (qn*y2[np-2] + 1.0);
-				for (k=np-2; k>=0; k--)
-				y2[k] = y2[k]*y2[k+1]+u[k];
+    if (i->row == next->row)
 
-			}
+      u[0] = (3.0 / (0.5)) * ((next->col - i->col) / (0.5) - firstder[j]);
+    else
+      u[0] =
+        (3.0 / (next->row - i->row)) * ((next->col - i->col) /
+                                        (next->row - i->row) - firstder[j]);
+  }
 
-	
+  // this is the decompositional loop of the tridiagonal algorithm. y2 and u
+  // are used for temporary storage of the decomposed factors
+  for (i++, j++; i != current_flowpath->end (); i++, j++)
+  {
+    flowpath::iterator prev = i;
+    prev--;
+    flowpath::iterator next = i;
+    next++;
 
-	}
+    if (i != current_flowpath->end ())
+    {
 
-		delete [] u;
-	return y2;
+      if ((i->col == prev->col) || (i->col == next->col)
+          || (next->row == prev->col))
+      {
+
+        y2[j] = 1e029;
+      }
+
+      else
+      {
+        sig = (i->row - prev->row) / (next->row - prev->col);
+        p = sig * y2[j - 1] + 2.0;
+        y2[j] = (sig - 1.0) / p;
+
+        if ((i->row == next->row) || (i->row == prev->row))
+          u[j] = (next->col - i->col) / (0.5) - (i->col - prev->col) / (0.5);
+
+        else
+          u[j] =
+            ((next->col - i->col) / (next->row - i->row)) -
+            ((i->col - prev->col) / (i->row - prev->row));
+
+        u[j] = (6.0 * u[j]) / (next->row - prev->row) - sig * u[j - 1] / p;
+      }
+
+    }
+
+
+    else
+    {
+
+      flowpath::iterator prev2 = prev;
+      prev2--;
+
+      if (firstder[np] > 0.99e30)
+        qn = un = 0.0;
+      else
+      {
+        qn = 0.5;
+        u[np - 1] =
+          (3.0 / (prev->row - prev2->row)) * (firstder[np] -
+                                              (prev->col -
+                                               prev2->col) / (prev->row -
+                                                              prev2->row));
+      }
+      y2[np - 1] = (un - qn * u[np - 2]) / (qn * y2[np - 2] + 1.0);
+      for (k = np - 2; k >= 0; k--)
+        y2[k] = y2[k] * y2[k + 1] + u[k];
+
+    }
+
+
+
+  }
+
+  delete[]u;
+  return y2;
 }
 
 
@@ -192,21 +214,25 @@ double * spline(flowpath* current_flowpath, double* firstder)
 // 2 nd edition.
 /////////////////////////////////////////////////////////////////////////////////////////
 
-double * calculate_curvature(flowpath * current_flowpath, double * firstder, double *y2)
-
+double *
+calculate_curvature (flowpath * current_flowpath, double *firstder,
+                     double *y2)
 {
-	double* curvature;
-	if ((curvature=(double*)calloc(current_flowpath->size ()+1,sizeof(double)))==NULL)
-		printf("error in initializing curvature array");
-	
-	int j=0;
-	for (flowpath::iterator i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++)
-	{
-		// calculation of curvature
-		firstder[j]= pow(firstder[j],2.0);
-		firstder[j] = 1+firstder[j];
-		curvature[j] = y2[j]/(pow(firstder[j],(3./2.)));
-	}
+  double *curvature;
+  if ((curvature =
+       (double *) calloc (current_flowpath->size () + 1,
+                          sizeof (double))) == NULL)
+    printf ("error in initializing curvature array");
+
+  int j = 0;
+  for (flowpath::iterator i = current_flowpath->begin ();
+       i != current_flowpath->end (); i++, j++)
+  {
+    // calculation of curvature
+    firstder[j] = pow (firstder[j], 2.0);
+    firstder[j] = 1 + firstder[j];
+    curvature[j] = y2[j] / (pow (firstder[j], (3. / 2.)));
+  }
 
   return curvature;
 }
@@ -217,45 +243,55 @@ double * calculate_curvature(flowpath * current_flowpath, double * firstder, dou
 // coefficient determined
 ///////////////////////////////////////////////////////////////////////
 
-double * calculate_asymmetry(flowpath * current_flowpath, double * curvature)
-
+double *
+calculate_asymmetry (flowpath * current_flowpath, double *curvature)
 {
 
-	double* asymmetry;
-	if ((asymmetry=(double*)calloc(current_flowpath->size (),sizeof(double)))==NULL)
-		printf("error in initializing asymmetry array");
-	
+  double *asymmetry;
+  if ((asymmetry =
+       (double *) calloc (current_flowpath->size (),
+                          sizeof (double))) == NULL)
+    printf ("error in initializing asymmetry array");
 
-	double min_curvature = 0;
-	double max_curvature = 0;
-	double range =0;	
 
-	int j=0;
+  double min_curvature = 0;
+  double max_curvature = 0;
+  double range = 0;
 
-	for (flowpath::iterator i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++)
-		{
-	
-			if (curvature[j]> max_curvature)
-				{max_curvature = curvature[j];}
+  int j = 0;
 
-			if (curvature[j]< min_curvature)
-				{min_curvature = curvature[j];}
-				//cout<<max_curvature<<" "<<min_curvature<<endl;
-		}
+  for (flowpath::iterator i = current_flowpath->begin ();
+       i != current_flowpath->end (); i++, j++)
+  {
 
-		range = (max_curvature - min_curvature);
+    if (curvature[j] > max_curvature)
+    {
+      max_curvature = curvature[j];
+    }
 
-	j=0;
-	for (flowpath::iterator i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++) 
-		{
+    if (curvature[j] < min_curvature)
+    {
+      min_curvature = curvature[j];
+    }
+    //cout<<max_curvature<<" "<<min_curvature<<endl;
+  }
 
-			asymmetry[j] = ((curvature[j] - max_curvature)+(curvature[j]-min_curvature))/range;
+  range = (max_curvature - min_curvature);
 
-		}
+  j = 0;
+  for (flowpath::iterator i = current_flowpath->begin ();
+       i != current_flowpath->end (); i++, j++)
+  {
 
-		return asymmetry;
+    asymmetry[j] =
+      ((curvature[j] - max_curvature) +
+       (curvature[j] - min_curvature)) / range;
+
+  }
+
+  return asymmetry;
 }
- 
+
 
 /********************************************************************
 
@@ -264,86 +300,93 @@ double * calculate_asymmetry(flowpath * current_flowpath, double * curvature)
   sectional discharge .
 *********************************************************************/
 
-COORPAIR storage(flowpath::iterator i, double * discharge, int j, long sim_time)
-
+COORPAIR
+storage (flowpath::iterator i, double *discharge, int j, long sim_time)
 {
-	
-		int right_count,left_count, lat_width_right,lat_width_left;
-		double A_cum; // the cumulative cross sectional discharge that can be stored
-		double waterlevel_height;
-			
-		COORPAIR curve_width;		
-		
-			
-		// initialize flowpath position
-		left_count = right_count = i->col;
-		waterlevel_height= get_topo_height(sim_time,i->row, i->col); // bottom of the river is the initial water level height
-		A_cum =0;
-					
-		// loop runs as long as the stored discharge is less than the total cross sectional Q
-		// and boundary condition for if the entire matrix width is flooded
-		// especially in the beginning; height differences will be small
-		// not much Q can be stored.
 
-		while (A_cum<discharge[j])
-			{
-				// determine the riverbed
-				while ((get_topo_height(sim_time, i->row, right_count) <= waterlevel_height)&& (right_count< number_of_colums-1))
-					right_count++;
-				
-				while ((get_topo_height(sim_time, i->row, left_count) <= waterlevel_height) &&(left_count >0))
-					left_count--;
-				
-				// determine whether rightside is the lowest riverbank					
-				if (get_topo_height(sim_time, i->row,right_count) <= get_topo_height(sim_time, i->row,left_count)) 
-				{
-					waterlevel_height = get_topo_height (sim_time, i->row, right_count);
-					
-					// from right riverbank onwards the cross-sectional storage is
-					// calculated untill the leftbank is reached
-					for (int k = right_count-1; k>left_count; k --)
-					{
-						A_cum += ((waterlevel_height- get_topo_height(sim_time, i->row,k))* dy);
-					} 
-					
-				} //endif
-				
-				// otherwise leftside is the lowest riverbank
-				else	
-				{
-					waterlevel_height = get_topo_height(sim_time, i->row, left_count);
-					// in that case from the left riverbank onwards the
-					// cross sectional Q is determined
-					for (int k = left_count+1; k< right_count; k ++)
-					{
-						A_cum += ((waterlevel_height- get_topo_height(sim_time, i->row,k))* dy);
-					}
-					
-				}
-				
-				// lat width depends on the storage capacity
-				if ((A_cum > discharge[j]) || (right_count==number_of_colums-1)||(left_count ==0))
-				{ 
-					break; 
-				}
-			
-				// for each step along the flowpath 
-				// the area under the waterlevel unto the topographical
-				// height is calculated, thus the A_cum has to be set back to 0
-				A_cum =0;
-							
-			}// end of while loop
-		
-			lat_width_left = i->col - left_count;
-			lat_width_right = right_count -i->col;
-			
-		//	curve_width.left = lat_width_left;
-		//	curve_width.right= lat_width_right;
-			curve_width.left =left_count;
-			curve_width.right= right_count;
-		
-	return curve_width;
-}	
+  int right_count, left_count, lat_width_right, lat_width_left;
+  double A_cum;                 // the cumulative cross sectional discharge that can be stored
+  double waterlevel_height;
+
+  COORPAIR curve_width;
+
+
+  // initialize flowpath position
+  left_count = right_count = i->col;
+  waterlevel_height = get_topo_height (sim_time, i->row, i->col);       // bottom of the river is the initial water level height
+  A_cum = 0;
+
+  // loop runs as long as the stored discharge is less than the total cross sectional Q
+  // and boundary condition for if the entire matrix width is flooded
+  // especially in the beginning; height differences will be small
+  // not much Q can be stored.
+
+  while (A_cum < discharge[j])
+  {
+    // determine the riverbed
+    while ((get_topo_height (sim_time, i->row, right_count) <=
+            waterlevel_height) && (right_count < number_of_colums - 1))
+      right_count++;
+
+    while ((get_topo_height (sim_time, i->row, left_count) <=
+            waterlevel_height) && (left_count > 0))
+      left_count--;
+
+    // determine whether rightside is the lowest riverbank                                  
+    if (get_topo_height (sim_time, i->row, right_count) <=
+        get_topo_height (sim_time, i->row, left_count))
+    {
+      waterlevel_height = get_topo_height (sim_time, i->row, right_count);
+
+      // from right riverbank onwards the cross-sectional storage is
+      // calculated untill the leftbank is reached
+      for (int k = right_count - 1; k > left_count; k--)
+      {
+        A_cum +=
+          ((waterlevel_height - get_topo_height (sim_time, i->row, k)) * dy);
+      }
+
+    }                           //endif
+
+    // otherwise leftside is the lowest riverbank
+    else
+    {
+      waterlevel_height = get_topo_height (sim_time, i->row, left_count);
+      // in that case from the left riverbank onwards the
+      // cross sectional Q is determined
+      for (int k = left_count + 1; k < right_count; k++)
+      {
+        A_cum +=
+          ((waterlevel_height - get_topo_height (sim_time, i->row, k)) * dy);
+      }
+
+    }
+
+    // lat width depends on the storage capacity
+    if ((A_cum > discharge[j]) || (right_count == number_of_colums - 1)
+        || (left_count == 0))
+    {
+      break;
+    }
+
+    // for each step along the flowpath 
+    // the area under the waterlevel unto the topographical
+    // height is calculated, thus the A_cum has to be set back to 0
+    A_cum = 0;
+
+  }                             // end of while loop
+
+  lat_width_left = i->col - left_count;
+  lat_width_right = right_count - i->col;
+
+  //      curve_width.left = lat_width_left;
+  //      curve_width.right= lat_width_right;
+  curve_width.left = left_count;
+  curve_width.right = right_count;
+
+  return curve_width;
+}
+
 // Dit is de sept 2001 versie waarin 'storage gebruikt wordt om de depositie zones te bepalen; er lijken nog wel wat bugs in te zittten
 // Daarom maar even voor de simpelere bovenstaande oplossing gekozen.
 /*void fluv_lat(flowpath* current_flowpath,flowpath::iterator coastline_cell_index, long sim_time, COORPAIR curve_width, double *discharge, double **sedflux_depo)
@@ -484,138 +527,154 @@ COORPAIR storage(flowpath::iterator i, double * discharge, int j, long sim_time)
 
 }*/
 
-void fluv_lat(flowpath* current_flowpath,flowpath::iterator coastline_cell_index, long sim_time, double *discharge, double **sedflux_depo)
-
+void
+fluv_lat (flowpath * current_flowpath,
+          flowpath::iterator coastline_cell_index, long sim_time,
+          double *discharge, double **sedflux_depo)
 {
 
-	// to divide the depositional sediment flux over a left and righthand component
-	double *sedflux_r;
-	sedflux_r=(double*)calloc(number_of_gscl, sizeof(double));
+  // to divide the depositional sediment flux over a left and righthand component
+  double *sedflux_r;
+  sedflux_r = (double *) calloc (number_of_gscl, sizeof (double));
 
-	double *sedflux_l;
-	sedflux_l=(double*)calloc(number_of_gscl, sizeof(double));
+  double *sedflux_l;
+  sedflux_l = (double *) calloc (number_of_gscl, sizeof (double));
 
-	double *l_scale;
-	l_scale =(double *)calloc(number_of_colums, sizeof(double));
-	
-	flowpath::iterator i;
-	int j=0;
-	for (i = current_flowpath->begin(); i != coastline_cell_index; i++,j++)
-	{
-		int L_fluv = 8; //this determines the width of fluvial deposition zone
-						// here it is done statically but should be dynamically in future
+  double *l_scale;
+  l_scale = (double *) calloc (number_of_colums, sizeof (double));
 
-		int lat_width_r=0; // determines the actual sedimentation zone width (right)
-		int lat_width_l=0; // determines the actual sedimentation zone width (left)
+  flowpath::iterator i;
+  int j = 0;
+  for (i = current_flowpath->begin (); i != coastline_cell_index; i++, j++)
+  {
+    int L_fluv = 8;             //this determines the width of fluvial deposition zone
+    // here it is done statically but should be dynamically in future
 
-		
-		//righthand side
-		
-		// boundary condition
-		// latwidth should not exceed grid boundaries
-			lat_width_r = i->col + L_fluv;
-			if (lat_width_r > number_of_colums) {lat_width_r = number_of_colums;}
-
-		double sum=0;
-
-		int o =1;
-		for(int l=i->col; l<lat_width_r;l++, o++)
-		{
-		
-			l_scale[o]=(double)(l-i->col)/(L_fluv);
-			double surf_fac_r = (erf(l_scale[o])-erf(l_scale[o-1])) ;
-			sum=sum+ surf_fac_r;
-
-			//cout<< "l = "<<l<<" surf_fac_r = "<<surf_fac_r<<" "<<sum<<endl;
-			double sedflux_sum_r=0;
-			for(int n=0;n<number_of_gscl;n++)
-			{
-				sedflux_r[n] = 0.5 * sedflux_depo[j][n];
-			//	cout<<" n "<<n<<" sedflux_r_n "<<sedflux_r[n]<<endl;
-				sedflux_sum_r = sedflux_sum_r+sedflux_r[n]*surf_fac_r*dt*dx;
-			}
-				space[sim_time][i->row][l][0] =space[sim_time][i->row][l][0]+ sedflux_sum_r;
-			
-			// to divide the sediment from coarse (graincell_cl =0) to fine (graincell_cl = num_of_gscl)
-			// assumption made: within a single timestep the grainsizes-classes stack and don't mix
-
-				int graincell_cl =0;
-				double height = 0.0;
-				while (height < sedflux_sum_r) 
-				{
-					if (height + sedflux_r[graincell_cl] < sedflux_sum_r) 
-					{
-						space[sim_time][i->row][l][graincell_cl+1]+=sedflux_r[graincell_cl];
-							height+=sedflux_r[graincell_cl];
-						graincell_cl++;
-					} 
-					else 
-					{
-						space[sim_time][i->row][l][graincell_cl+1]+=sedflux_sum_r - height;
-						sedflux_r[graincell_cl] =sedflux_r[graincell_cl] -(sedflux_sum_r - height);
-						height = sedflux_sum_r;
-					}
-				}//end while
-
-			
-
-		}// end right side
+    int lat_width_r = 0;        // determines the actual sedimentation zone width (right)
+    int lat_width_l = 0;        // determines the actual sedimentation zone width (left)
 
 
-		// left hand side
+    //righthand side
 
-		// boundary condition
-		// latwidth should not exceed grid boundaries
-		lat_width_r = i->col - L_fluv;
-		if (lat_width_r < 1) {lat_width_r = 1;}
+    // boundary condition
+    // latwidth should not exceed grid boundaries
+    lat_width_r = i->col + L_fluv;
+    if (lat_width_r > number_of_colums)
+    {
+      lat_width_r = number_of_colums;
+    }
 
-		int graincell_cl = 0;
-		sum = 0;
+    double sum = 0;
 
-		int p =1;
-		for(int l=i->col+1; l>lat_width_r;l--, p++)
-		{
+    int o = 1;
+    for (int l = i->col; l < lat_width_r; l++, o++)
+    {
 
-			l_scale[p]=(double)(i->col-l)/(L_fluv);
-			double surf_fac_l = (erf(l_scale[p])-erf(l_scale[p-1])) ;
-			sum=sum+ surf_fac_l;
+      l_scale[o] = (double) (l - i->col) / (L_fluv);
+      double surf_fac_r = (erf (l_scale[o]) - erf (l_scale[o - 1]));
+      sum = sum + surf_fac_r;
 
-			double sedflux_sum_l=0;
-			for(int n=0;n<number_of_gscl;n++)
-			{
-				sedflux_l[n] = 0.5 * sedflux_depo[j][n];
-			//	cout<<" n "<<n<<" sedflux_r_n "<<sedflux_r[n]<<endl;
-				sedflux_sum_l = sedflux_sum_l+sedflux_l[n]*surf_fac_l*dt*dx;
-			}
-				space[sim_time][i->row][l][0] =space[sim_time][i->row][l][0]+ sedflux_sum_l;
-			
-				// to divide the sediment from coarse (graincell_cl =0) to fine (graincell_cl = num_of_gscl)
-			// assumption made: within a single timestep the grainsizes-classes stack and don't mix
+      //cout<< "l = "<<l<<" surf_fac_r = "<<surf_fac_r<<" "<<sum<<endl;
+      double sedflux_sum_r = 0;
+      for (int n = 0; n < number_of_gscl; n++)
+      {
+        sedflux_r[n] = 0.5 * sedflux_depo[j][n];
+        //      cout<<" n "<<n<<" sedflux_r_n "<<sedflux_r[n]<<endl;
+        sedflux_sum_r = sedflux_sum_r + sedflux_r[n] * surf_fac_r * dt * dx;
+      }
+      space[sim_time][i->row][l][0] =
+        space[sim_time][i->row][l][0] + sedflux_sum_r;
 
-				int graincell_cl =0;
-				double height = 0.0;
-				while (height < sedflux_sum_l) 
-				{
-					if (height + sedflux_l[graincell_cl] < sedflux_sum_l) 
-					{
-						space[sim_time][i->row][l][graincell_cl+1]+=sedflux_l[graincell_cl];
-							height+=sedflux_l[graincell_cl];
-						graincell_cl++;
-					} 
-					else 
-					{
-						space[sim_time][i->row][l][graincell_cl+1]+=sedflux_sum_l - height;
-						sedflux_l[graincell_cl] =sedflux_l[graincell_cl] -(sedflux_sum_l - height);
-						height = sedflux_sum_l;
-					}
-				}//end while
+      // to divide the sediment from coarse (graincell_cl =0) to fine (graincell_cl = num_of_gscl)
+      // assumption made: within a single timestep the grainsizes-classes stack and don't mix
+
+      int graincell_cl = 0;
+      double height = 0.0;
+      while (height < sedflux_sum_r)
+      {
+        if (height + sedflux_r[graincell_cl] < sedflux_sum_r)
+        {
+          space[sim_time][i->row][l][graincell_cl + 1] +=
+            sedflux_r[graincell_cl];
+          height += sedflux_r[graincell_cl];
+          graincell_cl++;
+        }
+        else
+        {
+          space[sim_time][i->row][l][graincell_cl + 1] +=
+            sedflux_sum_r - height;
+          sedflux_r[graincell_cl] =
+            sedflux_r[graincell_cl] - (sedflux_sum_r - height);
+          height = sedflux_sum_r;
+        }
+      }                         //end while
 
 
 
+    }                           // end right side
+
+
+    // left hand side
+
+    // boundary condition
+    // latwidth should not exceed grid boundaries
+    lat_width_r = i->col - L_fluv;
+    if (lat_width_r < 1)
+    {
+      lat_width_r = 1;
+    }
+
+    int graincell_cl = 0;
+    sum = 0;
+
+    int p = 1;
+    for (int l = i->col + 1; l > lat_width_r; l--, p++)
+    {
+
+      l_scale[p] = (double) (i->col - l) / (L_fluv);
+      double surf_fac_l = (erf (l_scale[p]) - erf (l_scale[p - 1]));
+      sum = sum + surf_fac_l;
+
+      double sedflux_sum_l = 0;
+      for (int n = 0; n < number_of_gscl; n++)
+      {
+        sedflux_l[n] = 0.5 * sedflux_depo[j][n];
+        //      cout<<" n "<<n<<" sedflux_r_n "<<sedflux_r[n]<<endl;
+        sedflux_sum_l = sedflux_sum_l + sedflux_l[n] * surf_fac_l * dt * dx;
+      }
+      space[sim_time][i->row][l][0] =
+        space[sim_time][i->row][l][0] + sedflux_sum_l;
+
+      // to divide the sediment from coarse (graincell_cl =0) to fine (graincell_cl = num_of_gscl)
+      // assumption made: within a single timestep the grainsizes-classes stack and don't mix
+
+      int graincell_cl = 0;
+      double height = 0.0;
+      while (height < sedflux_sum_l)
+      {
+        if (height + sedflux_l[graincell_cl] < sedflux_sum_l)
+        {
+          space[sim_time][i->row][l][graincell_cl + 1] +=
+            sedflux_l[graincell_cl];
+          height += sedflux_l[graincell_cl];
+          graincell_cl++;
+        }
+        else
+        {
+          space[sim_time][i->row][l][graincell_cl + 1] +=
+            sedflux_sum_l - height;
+          sedflux_l[graincell_cl] =
+            sedflux_l[graincell_cl] - (sedflux_sum_l - height);
+          height = sedflux_sum_l;
+        }
+      }                         //end while
 
 
 
 
-		}// end for left hand side
-	}
+
+
+
+    }                           // end for left hand side
+  }
 }

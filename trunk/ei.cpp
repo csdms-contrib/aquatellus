@@ -10,11 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXIT 100			// maximum number of iterations
-#define EULER 0.5772156649	//Euler's constant gamma
-#define FPMIN 1.0E-30		// close to smallest representable float
-#define EPS 1.0E-07			//desired relative error
-#define MAXSTR 80			// for decapping the file headers
+#define MAXIT 100               // maximum number of iterations
+#define EULER 0.5772156649      //Euler's constant gamma
+#define FPMIN 1.0E-30           // close to smallest representable float
+#define EPS 1.0E-07             //desired relative error
+#define MAXSTR 80               // for decapping the file headers
 /*
 int main (void)
 
@@ -54,48 +54,56 @@ int main (void)
 }
 */
 
-double ei(float x)
+double
+ei (float x)
 {
-	int k;
-	double fact,prev,sum,term;
+  int k;
+  double fact, prev, sum, term;
 
-	
-	if (x<=0.0)	printf("bad arguments in ei\n");
-	if (x<FPMIN)return log(x) + EULER;
-	if (x<= -log(EPS)) {
-		sum = 0.0;
-		fact = 1.0;
-		for (k=1; k<=MAXIT; k++) {
-			fact *= x/k;
-			term = fact/k;
-			sum+= term;
-			if (term < EPS*sum) break;
 
-		}
-		 
-		if (k> MAXIT) printf("series failed in ei\n");
-		return sum +log(x)+EULER;
-	}
-	else{
-		sum =0.0;
-		term =1.0;
-		for (k=1; k<=MAXIT; k++) {
-			prev =term;
-			term *= k/x;
-			if (term < EPS) break;
-			// since the final sum is greater than one
-			// term itself approximates the relative error
+  if (x <= 0.0)
+    printf ("bad arguments in ei\n");
+  if (x < FPMIN)
+    return log (x) + EULER;
+  if (x <= -log (EPS))
+  {
+    sum = 0.0;
+    fact = 1.0;
+    for (k = 1; k <= MAXIT; k++)
+    {
+      fact *= x / k;
+      term = fact / k;
+      sum += term;
+      if (term < EPS * sum)
+        break;
 
-			if(term< prev) sum+= term;
-			else{
-				sum-= prev;
-				break;
-			}
-		}
-		return exp(x) * (1.0 + sum)/x;
-	}
+    }
+
+    if (k > MAXIT)
+      printf ("series failed in ei\n");
+    return sum + log (x) + EULER;
+  }
+  else
+  {
+    sum = 0.0;
+    term = 1.0;
+    for (k = 1; k <= MAXIT; k++)
+    {
+      prev = term;
+      term *= k / x;
+      if (term < EPS)
+        break;
+      // since the final sum is greater than one
+      // term itself approximates the relative error
+
+      if (term < prev)
+        sum += term;
+      else
+      {
+        sum -= prev;
+        break;
+      }
+    }
+    return exp (x) * (1.0 + sum) / x;
+  }
 }
-
-
-
-
