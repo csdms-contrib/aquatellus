@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <math.h>
 #include <time.h>
 #include "aquatellus.h"
 #include "main.h"
 
 #define PI 3.14159265359 
+
+using namespace std;
 
 //  RANDOM_CLIMATE FACTOR ////////////////////////////////////////////////////
 // this factor induces changes over time in the initial input of discharge and
