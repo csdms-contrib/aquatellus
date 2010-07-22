@@ -1,7 +1,7 @@
 //	this function writes simple output to files
 // 1.	a SURFER MAP of the topographical heights at a certain time step
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
@@ -14,6 +14,8 @@
 #include "flowpath.h"
 #include "inputcontrols.h"
 #include "output.h"
+
+using namespace std;
 
 
 #define FILE_NAME1 "topo.grd"
