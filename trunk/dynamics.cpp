@@ -1,18 +1,18 @@
 // calculates in 2D erosion / sedimentation flux of the longitudinal profile
 // which is extracted from the 3D matrix for this specific time step.
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <limits.h>
-#include <fstream.h>
+#include <fstream>
 #include <iterator>
 #include "main.h"
 #include "aquatellus.h"
-#include "space.h"
+#include "Space.h"
 #include "flowpath.h"
 
 int i =0;
