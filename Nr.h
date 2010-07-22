@@ -80,8 +80,8 @@ extern "C" {
 	void eigsrt(double *, double **, int);
 	double el2(double, double, double, double);
 	void elmhes(double **, int);
-	double erf(double);
-	double erfc(double);
+	//double erf(double);
+	//double erfc(double);
 	double erfcc(double);
 	void eulsum(double *, double, int, double *);
 	double evlmem(double, double *, int, double);
@@ -328,8 +328,8 @@ extern "C" {
 	void  eigsrt(double *d, double **v, int n);
 	double el2(double x, double qqc, double aa, double bb);
 	void  elmhes(double **a, int n);
-	double erf(double x);
-	double erfc(double x);
+	//double erf(double x);
+	//double erfc(double x);
 	double erfcc(double x);
 	void  eulsum(double *sum, double term, int jterm, double *wksp);
 	double evlmem(double fdt, double *cof, int m, double pm);
@@ -592,7 +592,7 @@ extern "C" {
 	void eigsrt();
 	double el2();
 	void elmhes();
-	double erf();
+	//double erf();
 	//double erfc();
 	double erfcc();
 	void eulsum();
