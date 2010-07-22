@@ -1,6 +1,6 @@
 #include <malloc.h>
 #include <stdio.h>
-#include<iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include "main.h"
