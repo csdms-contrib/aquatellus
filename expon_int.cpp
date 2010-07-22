@@ -10,11 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXIT 100			// maximum number of iterations
-#define EULER 0.5772156649	//Euler's constant gamma
-#define FPMIN 1.0E-30		// close to smallest representable float
-#define EPS 1.0E-07			//desired relative error
-#define MAXSTR 80			// for decapping the file headers
+#define MAXIT 100               // maximum number of iterations
+#define EULER 0.5772156649      //Euler's constant gamma
+#define FPMIN 1.0E-30           // close to smallest representable float
+#define EPS 1.0E-07             //desired relative error
+#define MAXSTR 80               // for decapping the file headers
 
 /*
 int main (void)
