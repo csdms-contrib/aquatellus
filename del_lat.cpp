@@ -13,14 +13,14 @@
 //#include "nrutil.h"
 
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <limits.h>
-#include <fstream.h>
+#include <fstream>
 
 #include "main.h"
 #include "aquatellus.h"
