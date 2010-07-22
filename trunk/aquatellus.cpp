@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
@@ -29,6 +29,8 @@
 #include "del_lat.h"
 #include "output.h"
 #include "ei.h"
+
+using namespace std;
 
 // time & grid dimensions
 // it is recommended to keep them rather low to avoid long simulation runs
