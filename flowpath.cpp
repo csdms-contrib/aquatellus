@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cstdio>
 #include "main.h"
 #include "flowpath.h"
 #include "Space.h"

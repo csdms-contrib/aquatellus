@@ -5,7 +5,7 @@
 #include <time.h>
 #include "aquatellus.h"
 #include "aquatellus_init_func.h"
-#include "space.h"
+#include "Space.h"
 #include "main.h"
 
 using namespace std;
