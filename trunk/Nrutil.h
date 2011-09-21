@@ -1,7 +1,7 @@
 #ifndef _NRUTIL_H_
 #define _NRUTIL_H_
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 

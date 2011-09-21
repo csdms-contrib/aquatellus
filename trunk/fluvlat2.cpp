@@ -24,6 +24,7 @@
 #include "fluv_lat.h"
 #include "Nr.h"
 #include "Nrutil.h"
+#include "main.h"
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -547,7 +548,7 @@ fluv_lat (flowpath * current_flowpath,
   int j = 0;
   for (i = current_flowpath->begin (); i != coastline_cell_index; i++, j++)
   {
-    int L_fluv = 8;             //this determines the width of fluvial deposition zone
+    int L_fluv = 26;             //this determines the width of fluvial deposition zone (set at 8 on May 2011)
     // here it is done statically but should be dynamically in future
 
     int lat_width_r = 0;        // determines the actual sedimentation zone width (right)

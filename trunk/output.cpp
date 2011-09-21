@@ -1,5 +1,5 @@
 //      this function writes simple output to files
-// 1.   a SURFER MAP of the topographical heights at a certain time step
+// 1.   a grid of the topographical heights at a certain time step
 
 #include <iostream>
 #include <stdlib.h>
@@ -9,6 +9,7 @@
 #include <math.h>
 #include <limits.h>
 
+#include "aquatellus.h"
 #include "main.h"
 #include "Space.h"
 #include "flowpath.h"
@@ -20,7 +21,6 @@ using namespace std;
 
 #define FILE_NAME1 "topo.grd"
 #define FILE_NAME2 "flowpath.dat"
-//int num_outp = 5; // this is the number of times output is wanted.
 
 
 
@@ -30,6 +30,7 @@ open_data_files (FILE ** ftopo, FILE ** fpath, int time)
   char filename[100];
   char *filePtr = &filename[0];
   ::sprintf (filePtr, "topo%d.grd", time);
+	printf("file name%s\n", filename);
   if ((*ftopo = fopen (filename, "w")) == NULL)
   {
     cerr << "error while opening file" << endl;
@@ -51,21 +52,6 @@ close_data_files (FILE ** ftopo, FILE ** fpath)
   fclose (*fpath);
 }
 
-// 1. here the header for the SURFER GRID FILE is written
-void
-write_topographical_map_header (FILE ** ftopo)
-{
-  // to indicate the data format as ASCII
-  fprintf (*ftopo, "DSAA \n");
-  // the total number of colums (x-axis) and rows(y-axis) are defined for drawing
-  fprintf (*ftopo, "%3d %3d\n", number_of_colums, number_of_rows);
-  // here in the header the minimum and maximum x-values are defined for drawing
-  fprintf (*ftopo, "  0  %5d \n", number_of_colums);
-  // here in the header the minimum and maximum y-values are defined for drawing
-  fprintf (*ftopo, "  0  %5d \n", number_of_rows);
-  // here in the header the minimum and maximum z-values are defined for drawing
-  fprintf (*ftopo, " 40  110 \n");
-}
 
 
 void
@@ -82,7 +68,7 @@ write_topographical_map (FILE ** ftopo, long sim_time)
         height += space[t][i][j][0];
 
       }
-      fprintf (*ftopo, "%5.5f ", height);
+      fprintf (*ftopo, "%3.3f ",height);
     }
 
     fprintf (*ftopo, "\n");
