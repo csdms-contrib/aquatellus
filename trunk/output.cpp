@@ -18,19 +18,18 @@
 
 using namespace std;
 
-
 #define FILE_NAME1 "topo.grd"
 #define FILE_NAME2 "flowpath.dat"
-
-
 
 void
 open_data_files (FILE ** ftopo, FILE ** fpath, int time)
 {
   char filename[100];
+
   char *filePtr = &filename[0];
+
   ::sprintf (filePtr, "topo%d.grd", time);
-	printf("file name%s\n", filename);
+  printf ("file name%s\n", filename);
   if ((*ftopo = fopen (filename, "w")) == NULL)
   {
     cerr << "error while opening file" << endl;
@@ -52,52 +51,57 @@ close_data_files (FILE ** ftopo, FILE ** fpath)
   fclose (*fpath);
 }
 
-
-
 void
 write_topographical_map (FILE ** ftopo, long sim_time)
 {
-  int i, j;
+  int i,
+    j;
+
   for (i = 0; i < number_of_rows; i++)
   {
     for (j = 0; j < number_of_colums; j++)
     {
       double height = 0;
+
       for (int t = 0; t <= sim_time; t++)
       {
         height += space[t][i][j][0];
 
       }
-      fprintf (*ftopo, "%3.3f ",height);
+      fprintf (*ftopo, "%3.3f ", height);
     }
 
     fprintf (*ftopo, "\n");
   }
 }
 
-
 // temporary calculation of weighted average of grainsize distribution
 double **
 calculate_grain_distr (double *grain_size, int Xpos)
 {
-  int i, j, k;
+  int i,
+    j,
+    k;
+
   double **median;
+
   int nx = number_of_colums;
+
   // code has to be totally adapted for longitudinal Xsection
   // int nx = number_of_rows;// in case of longitudinal crosssection
 
   // allocation of median
   if ((median =
-       (double **) calloc ((end_of_times / dt), sizeof (double *))) == NULL)
+       (double **)calloc ((end_of_times / dt), sizeof (double *))) == NULL)
     printf ("median array could not be allocated");
   for (i = 0; i < (end_of_times / dt); i++)
   {
-    if ((median[i] = (double *) calloc (nx, sizeof (double))) == NULL)
+    if ((median[i] = (double *)calloc (nx, sizeof (double))) == NULL)
       printf ("median array could not be allocated");
   }
 
-
   double tmpsum;
+
   for (j = 0; j < end_of_times / dt; j++)       //Calculate weighted average grainsize using the farmer-woodenshoes method
   {
     for (i = 0; i < nx; i++)
@@ -110,18 +114,16 @@ calculate_grain_distr (double *grain_size, int Xpos)
           tmpsum += (space[j][Xpos][i][k] * grain_size[k - 1]);
           median[j][i] = 10000 * (tmpsum);      // in micron
 
-
         }
 
       }
       else
         median[j][i] = 4;
-      //cout<<" time " <<j<<" position "<<i<<" "<<median[j][i]<<endl; 
+      //cout<<" time " <<j<<" position "<<i<<" "<<median[j][i]<<endl;
     }
   }
   return median;
 }
-
 
 // this function is necessary for the well routine
 // temporary calculation of weighted average of grainsize distribution
@@ -129,15 +131,18 @@ double *
 calculate_grain_distr_well (double *grain_size, int wellpos_row,
                             int wellpos_col)
 {
-  int j, k;
+  int j,
+    k;
+
   double *median_point;
 
   // allocation of median
   if ((median_point =
-       (double *) calloc ((end_of_times / dt), sizeof (double))) == NULL)
+       (double *)calloc ((end_of_times / dt), sizeof (double))) == NULL)
     printf ("median array could not be allocated");
 
   double tmpsum;
+
   for (j = 0; j < end_of_times / dt; j++)       //Calculate weighted average grainsize using the farmer-woodenshoes method
   {
     if (space[j][wellpos_row][wellpos_col][0] != 0)
@@ -156,7 +161,7 @@ calculate_grain_distr_well (double *grain_size, int wellpos_row,
     }
     else
       median_point[j] = 4;
-    //cout<<" time " <<j<<" "<<median_point[j]<<endl;       
+    //cout<<" time " <<j<<" "<<median_point[j]<<endl;
   }
 
   return median_point;
@@ -166,23 +171,42 @@ void
 write_median_psfile (double **median, int Xpos)
 {
 
-  long i, j;
-  short Lmarg, Rmarg, Tmarg, Bmarg;     // left, right, top and bottem margins
-  long hhmin, hhmax;
-  double hmin, hmax, scx, scy, huemedian, medianmin, medianmax, medianminn,
-    medianmaxx, dmedian;
+  long i,
+    j;
+
+  short Lmarg,
+    Rmarg,
+    Tmarg,
+    Bmarg;                      // left, right, top and bottem margins
+
+  long hhmin,
+    hhmax;
+
+  double hmin,
+    hmax,
+    scx,
+    scy,
+    huemedian,
+    medianmin,
+    medianmax,
+    medianminn,
+    medianmaxx,
+    dmedian;
+
   FILE *psfp;
+
   char f_name[255];
 
   // these determine the longitudinal scale for output
   //x-pos start &stop ps-output
   short xstrtps = 10;
+
   short xstopps = number_of_colums - 1;
 
   Rmarg = 10;
   Tmarg = 120;
-  Bmarg = 120;                  /* 0.5 inch margins */
-  Lmarg = 30;                   /* 30 pts for vertical scale bar        */
+  Bmarg = 120;  /* 0.5 inch margins */
+  Lmarg = 30;   /* 30 pts for vertical scale bar        */
 
   strcpy (f_name, "xsection.ps");
 
@@ -202,11 +226,10 @@ write_median_psfile (double **median, int Xpos)
   {
     for (j = xstrtps; j < xstopps; j++)
     {
-      medianmin = 0;            //medianminn = MIN(median[i][j],medianmin);
-      medianmax = 400;          //medianmaxx = MAX(median[i][j],medianmax); 
+      medianmin = 0;    //medianminn = MIN(median[i][j],medianmin);
+      medianmax = 400;  //medianmaxx = MAX(median[i][j],medianmax);
     }
   }
-
 
   dmedian = (medianmax - medianmin) / 10;
 
@@ -221,9 +244,9 @@ write_median_psfile (double **median, int Xpos)
   fprintf (psfp, "%d %d translate\n", Lmarg + 25, Bmarg + 25);
   fprintf (psfp, "/Helvetica findfont 10 scalefont setfont\n");
 
-  // Now draw 10 median classes - not log median  
+  // Now draw 10 median classes - not log median
   fprintf (psfp, "0 0 0 setrgbcolor\n");
-  fprintf (psfp, "10 15 moveto\n0 -20 rlineto\nstroke\n");      //the first 
+  fprintf (psfp, "10 15 moveto\n0 -20 rlineto\nstroke\n");      //the first
 
   for (i = 0; i <= 10; i++)
   {
@@ -250,8 +273,8 @@ write_median_psfile (double **median, int Xpos)
   {
     for (j = xstrtps; j < xstopps; j++)
     {
-      hmin = 82;                //MIN(get_topo_height(i, Xpos, j), hmin);
-      hmax = 92;                //MAX(get_topo_height(i, Xpos, j),hmax);
+      hmin = 82;        //MIN(get_topo_height(i, Xpos, j), hmin);
+      hmax = 92;        //MAX(get_topo_height(i, Xpos, j),hmax);
     }
   }
 
@@ -312,7 +335,7 @@ write_median_psfile (double **median, int Xpos)
            fprintf(psfp,"%5.1f %5.1f lineto\n",Lmarg+scx*(j+1-xstrtps),Bmarg+scy*(space[i][Xpos][j+1][0]-hmin));
            fprintf(psfp,"%5.1f %5.1f lineto\n",Lmarg+scx*(j+1-xstrtps),Bmarg+scy*(space[i-1][Xpos][j+1][0]-hmin));
            fprintf(psfp,"%5.1f %5.1f lineto\n",Lmarg+scx*(j-xstrtps),  Bmarg+scy*(space[i-1][Xpos][j][0]-hmin));
-           fprintf(psfp,"%5.1f %5.1f lineto\n",Lmarg+scx*(j-xstrtps),  Bmarg+scy*(space[i][Xpos][j][0]-hmin));  
+           fprintf(psfp,"%5.1f %5.1f lineto\n",Lmarg+scx*(j-xstrtps),  Bmarg+scy*(space[i][Xpos][j][0]-hmin));
            fprintf(psfp,"fill\n"); */
 
         //hier aangepast omdat topografische hoogte gebruikt moet worden?
@@ -333,8 +356,7 @@ write_median_psfile (double **median, int Xpos)
 
       }
 
-
-      if (i == 0)               /* put tickmarks every j and labels every 5 j   */
+      if (i == 0)       /* put tickmarks every j and labels every 5 j   */
       {
         fprintf (psfp, "gsave\n");
         fprintf (psfp, "0 0 0 setrgbcolor\n");
@@ -345,7 +367,7 @@ write_median_psfile (double **median, int Xpos)
         //fprintf(psfp,"%5.1f %5.1f moveto\n",Lmarg+scx*(j-xstrtps),get_topo_height(0,Xpos,j)-hmin);
 
         if (j % 1 == 0)
-        {                       /*outline tickmarks according to number */
+        {       /*outline tickmarks according to number */
           fprintf (psfp, "0 -3 rlineto\n");
           fprintf (psfp, "-3 -10 rmoveto\n");
 
@@ -363,24 +385,40 @@ write_median_psfile (double **median, int Xpos)
     }
   }
 
-
   fprintf (psfp, "showpage\n");
-
 
   fclose (psfp);
 }
-
 
 void
 write_simulatedwell_psfile (double *median_point, int wellpos_row,
                             int wellpos_col)
 {
   short i;
-  short Lmarg, Rmarg, Tmarg, Bmarg;
-  double hhmin, hhmax;
-  double hmin, hmax, scx, scy, Mmin, Mmax, Mminn, Mmaxx;
-  double red, green, blue;
+
+  short Lmarg,
+    Rmarg,
+    Tmarg,
+    Bmarg;
+
+  double hhmin,
+    hhmax;
+
+  double hmin,
+    hmax,
+    scx,
+    scy,
+    Mmin,
+    Mmax,
+    Mminn,
+    Mmaxx;
+
+  double red,
+    green,
+    blue;
+
   FILE *psfp;
+
   char f_name[255];
 
   Rmarg = 0;
@@ -388,15 +426,15 @@ write_simulatedwell_psfile (double *median_point, int wellpos_row,
   Bmarg = 0;
   Lmarg = 10;
 
-  // 30 pts for vertical scale bar        
+  // 30 pts for vertical scale bar
   strcpy (f_name, "well.ps");
   psfp = fopen (f_name, "w");
 
   fprintf (psfp, "%%!\n");
   fprintf (psfp, "gsave\n");
 
-  // draw permeability color coding bar 
-  // first determine perm range 
+  // draw permeability color coding bar
+  // first determine perm range
   Mmax = -1000000;
   Mmin = 1000000;
 
@@ -406,7 +444,7 @@ write_simulatedwell_psfile (double *median_point, int wellpos_row,
     Mmax = Mmaxx = MAX (median_point[i], Mmax);
   }
   cout << " Mmax " << Mmax << endl;
-  // Determine x & y scale 
+  // Determine x & y scale
 
   hmax = hhmax = -1000000;
   hmin = hhmin = 1000000;
@@ -420,8 +458,7 @@ write_simulatedwell_psfile (double *median_point, int wellpos_row,
   scy = (480 - (Tmarg + Bmarg)) / (hmax - hmin);
   scx = (Lmarg + Rmarg);
 
-
-  // Draw well FILL 
+  // Draw well FILL
   fprintf (psfp, "0 0 0 setrgbcolor\n");
   fprintf (psfp, "0.02 setlinewidth\n");
 

@@ -4,7 +4,10 @@ double
 gammln (double xx)
 //double xx;
 {
-  double x, tmp, ser;
+  double x,
+    tmp,
+    ser;
+
   static double cof[6] = { 76.18009173, -86.50532033, 24.01409822,
     -1.231739516, 0.120858003e-2, -0.536382e-5
   };

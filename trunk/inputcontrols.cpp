@@ -6,7 +6,6 @@
 #include "aquatellus.h"
 #include "main.h"
 
-
 #define PI 3.14159265359
 
 using namespace std;
@@ -15,19 +14,18 @@ using namespace std;
 // this factor induces changes over time in the initial input of discharge and
 // initial sediment load --> reflecting a component of climatic changes in time
 // It is set to random to facilitate research in which the climatic component
-// is not that important 
+// is not that important
 ///////////////////////////////////////////////////////////////////////////////////
 
 double
 get_random_climate_factor ()
 {
   double upper_climate_range = 2;
+
   climate_factor = upper_climate_range * rand () / RAND_MAX;    //random has range of 0-2
   //cout<<" climate-factor "<<climate_factor<<endl;
   return climate_factor;
 }
-
-
 
 double
 get_sealevel (int sim_time)

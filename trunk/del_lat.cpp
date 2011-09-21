@@ -12,7 +12,6 @@
 #include "Nr.h"
 //#include "nrutil.h"
 
-
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
@@ -30,34 +29,43 @@
 #include "dynamics.h"
 #include"del_lat.h"
 
-
 void
 del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
          double *discharge, long sim_time, double **sedflux_depo)
 {
 #define VISCO  0.8
   int lat_width = 0;
-  double b, h, u, b_h_ratio, Re;
+
+  double b,
+    h,
+    u,
+    b_h_ratio,
+    Re;
+
   double tan_alpha;
 
   //dynamically declared for each timestep
   int plume_length = number_of_rows - coastline_cell_index->row;
 
   double *l_scale;
-  l_scale = (double *) calloc (number_of_colums, sizeof (double));
+
+  l_scale = (double *)calloc (number_of_colums, sizeof (double));
 
   // to divide the depositional sediment flux over a left and righthand component
   double *sedflux_r;
-  sedflux_r = (double *) calloc (number_of_gscl, sizeof (double));
+
+  sedflux_r = (double *)calloc (number_of_gscl, sizeof (double));
 
   double *sedflux_l;
-  sedflux_l = (double *) calloc (number_of_gscl, sizeof (double));
 
+  sedflux_l = (double *)calloc (number_of_gscl, sizeof (double));
 
   int flx = coastline_cell_index->row;  // the row position of the coastline cell in the matrix
+
   int fly = coastline_cell_index->col;  // the column position of the coastline cell in the matrix
 
   int j = 0;
+
   flowpath::iterator i = current_flowpath->begin ();
   i++;
   j++;
@@ -77,12 +85,11 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
     b = pow (discharge[j], 0.5);        //riverwidth
     h = pow (discharge[j], 0.4);        // riverdepth
     u = pow (discharge[j], 0.1);        // river velocity
-    b_h_ratio = b / h;          // width/depth ratio
+    b_h_ratio = b / h;  // width/depth ratio
     Re = u * (pow ((h * (b / 2)), 0.5)) / VISCO;        //Reynolds number
 
-    double waterdepth =
-      get_topo_height (sim_time, coastline_cell_index->row,
-                       coastline_cell_index->col) - sealevel;
+    double waterdepth = get_topo_height (sim_time, coastline_cell_index->row,
+                                         coastline_cell_index->col) - sealevel;
 
     // here the plume type is decided
 
@@ -92,7 +99,7 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
       printf (" the plume is bedfriction dominated\n");
     }
 
-    else                        //turbulent jet
+    else        //turbulent jet
     {
       tan_alpha = 0.249;
       printf ("the plume is a turbulent jet\n");
@@ -101,11 +108,12 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
     //deposition in the coastline cell
     //for each grainsize-class add the sedflux to space
     int n = 0;
+
     double sedflux_sum = 0;
+
     for (n = 0; n < number_of_gscl; n++)
     {
-      space[sim_time][i->row][i->col][n + 1] +=
-        (sedflux_depo[j][n] * dt * dx);
+      space[sim_time][i->row][i->col][n + 1] += (sedflux_depo[j][n] * dt * dx);
       sedflux_sum += sedflux_depo[j][n];
     }
     space[sim_time][i->row][i->col][0] += (sedflux_sum * dt * dx);
@@ -118,25 +126,30 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
     printf ("=");
 
     double L_plume = (0.5 * b) + (tan_alpha * dx * (j - flx));
-    int lat_width = (int) (L_plume / dy);
+
+    int lat_width = (int)(L_plume / dy);
 
     //righthand side of the plume
 
-
     int o = 1;
+
     int graincell_cl = 0;
+
     for (int l = fly; l < (fly + (lat_width - 1)); l++, o++)
     {
       //lat_width is scaled to 0-2 domain appropriate for erf()
-      l_scale[o] = (double) (l - fly) / (lat_width / 2.0);
+      l_scale[o] = (double)(l - fly) / (lat_width / 2.0);
 
-      // the factor 0.5 needs to be used to divide half of the sediment only          
+      // the factor 0.5 needs to be used to divide half of the sediment only
       double surf_fac_right = (erf (l_scale[o]) - erf (l_scale[o - 1])) * 0.5;
+
       //cout<<l<<" "<<"surf_fac_right = "<<surf_fac_right<<endl;
 
       //for each grainsize-class add the sedflux to space
       int n = 0;
+
       double sedflux_sum_r = 0;
+
       for (n = 0; n < number_of_gscl; n++)
       {
         sedflux_r[n] = 0.5 * sedflux_depo[j][n];
@@ -149,6 +162,7 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
       // to divide the sediment from coarse (graincell_cl =0) to fine (graincell_cl = num_of_gscl)
       // assumption made: grainsizes-classes stack and don't mix
       double height = 0.0;
+
       while (height < sedflux_sum_r)
       {
         if (height + sedflux_r[graincell_cl] < sedflux_sum_r)
@@ -166,19 +180,22 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
           sedflux_r[graincell_cl] -= sedflux_sum_r - height;
           height = sedflux_sum_r;
         }
-      }                         // end while
-    }                           // end righthand
+      } // end while
+    }   // end righthand
 
     //lefthandside of the plume
     int r = 1;
+
     graincell_cl = 0;
     for (int q = fly + 1; q > ((fly) - (lat_width - 2)); q--, r++)
     {
       double surf_fac_left = (erf (l_scale[r]) - erf (l_scale[r - 1])) * 0.5;
+
       //      cout<<q<<" "<<"surf_fac_left = "<<surf_fac_left<<endl;
       //for each grainsize-class add the sedflux to space
 
       int n = 0;
+
       double sedflux_sum_l = 0;
 
       for (n = 0; n < number_of_gscl; n++)
@@ -194,6 +211,7 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
       // to divide the sediment from coarse (graincell_cl =0) to fine (graincell_cl = num_of_gscl)
       // assumption made: grainsizes-classes stack and don't mix
       double height = 0.0;
+
       while (height < sedflux_sum_l)
       {
         if (height + sedflux_l[graincell_cl] < sedflux_sum_l)
@@ -210,10 +228,10 @@ del_lat (flowpath * current_flowpath, flowpath::iterator coastline_cell_index,
           height = sedflux_sum_l;
         }
 
-      }                         //end while
+      } //end while
 
-    }                           //end righthand
+    }   //end righthand
 
-  }                             // end of offshore flowpath loop
+  }     // end of offshore flowpath loop
 
-}                               //end of del_lat
+}       //end of del_lat

@@ -10,7 +10,6 @@
 
 grid *space;
 
-
 //////////////////////////////////////////////////////////////////////////////
 // here the 4-D matrix (time and 3 spatial dimensions) is declared
 //////////////////////////////////////////////////////////////////////////////
@@ -37,8 +36,7 @@ define_space (int number_of_time_steps,
 
       for (int j = 0; j < number_of_colums; j++)
       {
-        space[t][i][j] =
-          (vector) calloc (number_of_gscl + 1, sizeof (MATELEM));
+        space[t][i][j] = (vector) calloc (number_of_gscl + 1, sizeof (MATELEM));
         if (space[t][i][j] == NULL)
           return -1;
       }
@@ -52,24 +50,30 @@ define_space (int number_of_time_steps,
 
 This function generates a topographical space as a matrix with a specified
 number of rows and colums. The general trend is a decreasing gradient
-(dy) towards the sea and shelf edge. 
+(dy) towards the sea and shelf edge.
 To incorporate the local variations in topographical height a small random
 height is added to the generated trend topography to every grid cell
-Subsequently,the initial height at each x,y position is filled with sediments 
+Subsequently,the initial height at each x,y position is filled with sediments
 of different grainsize classes. The dh distribution depends on user-defined
 percentages (sed_cont_perc)
 */
 ///////////////////////////////////////////////////////////////////////////
 
 void
-initialize_space (double initial_height, double initial_gradient, double offshore_gradient)
+initialize_space (double initial_height, double initial_gradient,
+                  double offshore_gradient)
 {
-  int i, j, k;
+  int i,
+    j,
+    k;
+
   double noise;
-	double test;
- // double initial_gradient = 0.1;        // initial gradient in longitudinal direction
- // double offshore_gradient = 0.4;
- // double initial_height = 100.0;
+
+  double test;
+
+  // double initial_gradient = 0.1;        // initial gradient in longitudinal direction
+  // double offshore_gradient = 0.4;
+  // double initial_height = 100.0;
   // this adds a random small height to each x,y topo point of the matrix
   /* Seed the random-number generator with current time so that
      the numbers will be different every time we run. */
@@ -77,10 +81,10 @@ initialize_space (double initial_height, double initial_gradient, double offshor
 
   for (j = 0; j < number_of_colums; j++)
   {
-    space[0][0][j][0] = initial_height;  // topographical height of top of the profile
-	  noise = 0.02*rand ()/RAND_MAX;
-	 // printf("noise on space is %lf ", noise);
-	 
+    space[0][0][j][0] = initial_height; // topographical height of top of the profile
+    noise = 0.02 * rand () / RAND_MAX;
+    // printf("noise on space is %lf ", noise);
+
     space[0][0][j][0] += noise;
   }
 
@@ -88,22 +92,22 @@ initialize_space (double initial_height, double initial_gradient, double offshor
   {
     for (j = 0; j < number_of_colums; j++)
     {
-      
-		//noise = initial_gradient*rand ()/RAND_MAX;
-		double noise_grad=0.5*initial_gradient;
-		noise=noise_grad*rand()/RAND_MAX;
-		
-		// printf("noise on space fill is %d %d %lf ", i,j, noise);
-		//space[0][i][j][0] = space[0][i - 1][j][0] - (noise);
-	 	
-		test=(initial_gradient*i);
-		//printf("test on space fill is %d %d %lf ", i,j, test);
-		
-		space[0][i][j][0] = space[0][i][j][0]+100.0;
-		space[0][i][j][0] = space[0][i][j][0]-test;
-		space[0][i][j][0] = space[0][i][j][0] - noise;
-		
-		
+
+      //noise = initial_gradient*rand ()/RAND_MAX;
+      double noise_grad = 0.5 * initial_gradient;
+
+      noise = noise_grad * rand () / RAND_MAX;
+
+      // printf("noise on space fill is %d %d %lf ", i,j, noise);
+      //space[0][i][j][0] = space[0][i - 1][j][0] - (noise);
+
+      test = (initial_gradient * i);
+      //printf("test on space fill is %d %d %lf ", i,j, test);
+
+      space[0][i][j][0] = space[0][i][j][0] + 100.0;
+      space[0][i][j][0] = space[0][i][j][0] - test;
+      space[0][i][j][0] = space[0][i][j][0] - noise;
+
       // check 1 total heights's declared?
       //cout<< space[0][i][j][0]<< endl;
 
@@ -121,17 +125,17 @@ initialize_space (double initial_height, double initial_gradient, double offshor
   {
     for (j = 0; j < number_of_colums; j++)
     {
-		double noise_grad=offshore_gradient*0.5;
-		noise = noise_grad * rand ()/RAND_MAX;
-		double test2=(offshore_gradient*(i-(number_of_rows-30)));
-		
-		space[0][i][j][0] = space[0][i-1][j][0];
-		space[0][i][j][0] = space[0][i][j][0]-test2;
-		space[0][i][j][0] = space[0][i][j][0]-noise;
+      double noise_grad = offshore_gradient * 0.5;
 
-		
+      noise = noise_grad * rand () / RAND_MAX;
+      double test2 = (offshore_gradient * (i - (number_of_rows - 30)));
+
+      space[0][i][j][0] = space[0][i - 1][j][0];
+      space[0][i][j][0] = space[0][i][j][0] - test2;
+      space[0][i][j][0] = space[0][i][j][0] - noise;
+
       // check 1 total heights's declared?
-     // cout<< space[0][i][j][0]<< endl;
+      // cout<< space[0][i][j][0]<< endl;
 
       // fill with dh's for each grainsize class
       for (k = 1; k <= number_of_gscl; k++)
@@ -163,7 +167,9 @@ double
 get_topo_height (int t, int row, int col)
 {
   int k = 0;
+
   double topoheight = 0;
+
   for (k = 0; k <= t; k++)
   {
     topoheight += space[k][row][col][0];
