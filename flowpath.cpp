@@ -19,9 +19,10 @@ switch_flowpath ()
 {
   double noise2;
   noise2 = 1.0 * rand () / RAND_MAX;    //32767 is internaly defined for RAND_MAX
-  int dt = 1;
-  //cout<<noise2<<endl;
-  // the time-step dependency is logarithmic
+  printf(" the noise for switch is %lf ", noise2);
+
+//  int dt = 1;
+    // the time-step dependency is logarithmic
   double switch_threshold = log10 (dt) / 2.0 + noise2;
   cout << "switch_threshold" << " " << switch_threshold << endl;
   return switch_threshold;
@@ -64,13 +65,13 @@ determine_lowest_cell (int t, INTPAIR actcel)
         if ((row_number != row_number + i)
             && (colum_number != colum_number + j))
         {
-          d = d / sqrt (1.1);
-
-
+          d = d / sqrt (1);
           // this is used to give preference to diagonal drainage; 
           //if sqrt (1) is given; reaction is a more sinuous flowpath
           // if sqrt (2) is given; reaction is a more straight flowpath
         }
+		  
+		  		  
       }
       if (d > max)
       {
@@ -82,7 +83,7 @@ determine_lowest_cell (int t, INTPAIR actcel)
     }                           //forloop
   }                             //forloop
 
-  if ((lowercel.row == -1) && (lowercel.col == -1))
+  if (lowercel.col == -1)//((lowercel.row == -1) && (lowercel.col == -1))
   {
     lowercel.row = actcel.row;
     lowercel.col = actcel.col;
@@ -109,12 +110,13 @@ determine_flowpath (int t)
 
   //river starts not every timestep in the same cell
   double randpos = 10.0 * rand () / RAND_MAX;
+	printf(" the start node is %lf ", randpos);
 //      cout<<"randpos ="<<randpos<<endl;
   current_cell.col += (int) randpos;
 //
   new_flowpath->push_back (current_cell);
 
-//      cout << current_cell.row << " " << current_cell.col << endl;
+  cout << current_cell.row << " " << current_cell.col << endl;
 
   bool found = false;
   do
@@ -122,7 +124,7 @@ determine_flowpath (int t)
     next_cell = determine_lowest_cell (t, current_cell);
 
     // boundary condition for 3 landscape-edges
-    // HIER NOG WEER NAAR KIJKEN (5 sept 2001)
+    // HIER NOG WEER NAAR KIJKEN 
     if ((next_cell.row == current_cell.row) &&
         (next_cell.col == current_cell.col) ||
         (next_cell.row == number_of_rows - 1) ||
@@ -135,7 +137,7 @@ determine_flowpath (int t)
       new_flowpath->push_back (next_cell);
     }
 
-//              cout << next_cell.row << " "<< next_cell.col << endl;
+   cout << next_cell.row << " "<< next_cell.col << endl;
     current_cell = next_cell;
   }
   while (!found);
@@ -149,7 +151,7 @@ get_flowpath (int t)
 {
   static flowpath *current_flowpath;
 
-  if ((switch_flowpath () > 0.8) || (t == 0))
+  if ((switch_flowpath () > 0.4) || (t == 0))
 
     //if(t==0) 
   {

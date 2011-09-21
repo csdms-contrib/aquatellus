@@ -19,7 +19,7 @@ typedef topo *grid;
 extern grid *space;
 int define_space (int number_of_time_steps,
                   int number_of_rows, int number_of_cols, int number_of_gscl);
-void initialize_space ();
+void initialize_space (double initial_height, double initial_gradient, double offshore_gradient);
 double get_space_height (int row, int column);
 double get_space_height (int t, int row, int column);
 double get_topo_height (int t, int row, int col);

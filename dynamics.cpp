@@ -10,30 +10,24 @@
 #include <limits.h>
 #include <fstream>
 #include <iterator>
-#include "main.h"
+
 #include "aquatellus.h"
 #include "Space.h"
 #include "flowpath.h"
+#include "main.h"
 
 int i = 0;
 int k, l, m, n;
 
-double streampower;
-double discharge_def = 200;
+
 double discharge_shapef = 0.005;
+
 double waterdepth = 0;
 
-double k_er_fluv = 0.00005;     //0.0000050; //used in experi 1;
-double k_er_marine = 0.00001;
-
-// these travel distances reflect the longitudinal travel distance
-double traveldist_fluvial[] = { 220, 230, 250, 270 };   // from coarse to fine
-double traveldist_marine[] = { 80, 160, 180, 220 };     //from fine to coarse{50,60,80,120};
 
 double traveldist;
-
+double streampower;
 double erosion_power;
-double sediment_load_def = 0.81;        // the given input sediment load at t=0
 double initload;                // the input sediment load at t=0 corrected for climate fluctuation
 
 double settle_rate;

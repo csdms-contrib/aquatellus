@@ -1,11 +1,12 @@
-#include <malloc.h>
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
-#include "main.h"
+#include <math.h>
+
 #include "Space.h"
 #include "aquatellus.h"
+#include "main.h"
 
 grid *space;
 
@@ -61,13 +62,14 @@ percentages (sed_cont_perc)
 ///////////////////////////////////////////////////////////////////////////
 
 void
-initialize_space ()
+initialize_space (double initial_height, double initial_gradient, double offshore_gradient)
 {
   int i, j, k;
   double noise;
-  double initial_gradient = 0.2;        // initial gradient in longitudinal direction
-  double offshore_gradient = 0.2;
-
+	double test;
+ // double initial_gradient = 0.1;        // initial gradient in longitudinal direction
+ // double offshore_gradient = 0.4;
+ // double initial_height = 100.0;
   // this adds a random small height to each x,y topo point of the matrix
   /* Seed the random-number generator with current time so that
      the numbers will be different every time we run. */
@@ -75,9 +77,10 @@ initialize_space ()
 
   for (j = 0; j < number_of_colums; j++)
   {
-    space[0][0][j][0] = 100.0;  // topographical height of top of the profile
-    noise = rand () * (initial_gradient / 2.0);
-    noise = noise / 100000.0;
+    space[0][0][j][0] = initial_height;  // topographical height of top of the profile
+	  noise = 0.02*rand ()/RAND_MAX;
+	 // printf("noise on space is %lf ", noise);
+	 
     space[0][0][j][0] += noise;
   }
 
@@ -85,15 +88,22 @@ initialize_space ()
   {
     for (j = 0; j < number_of_colums; j++)
     {
-      space[0][i][j][0] = space[0][i - 1][j][0] - initial_gradient;
-
-      //cout<< space[0][i][j][0]<< endl;      
-
-      noise = rand () * (initial_gradient / 2.0);
-      noise = noise / 100000.0;
-
-
-      space[0][i][j][0] = space[0][i][j][0] + noise;
+      
+		//noise = initial_gradient*rand ()/RAND_MAX;
+		double noise_grad=0.5*initial_gradient;
+		noise=noise_grad*rand()/RAND_MAX;
+		
+		// printf("noise on space fill is %d %d %lf ", i,j, noise);
+		//space[0][i][j][0] = space[0][i - 1][j][0] - (noise);
+	 	
+		test=(initial_gradient*i);
+		//printf("test on space fill is %d %d %lf ", i,j, test);
+		
+		space[0][i][j][0] = space[0][i][j][0]+100.0;
+		space[0][i][j][0] = space[0][i][j][0]-test;
+		space[0][i][j][0] = space[0][i][j][0] - noise;
+		
+		
       // check 1 total heights's declared?
       //cout<< space[0][i][j][0]<< endl;
 
@@ -111,15 +121,17 @@ initialize_space ()
   {
     for (j = 0; j < number_of_colums; j++)
     {
-      space[0][i][j][0] = space[0][i - 1][j][0] - offshore_gradient;
+		double noise_grad=offshore_gradient*0.5;
+		noise = noise_grad * rand ()/RAND_MAX;
+		double test2=(offshore_gradient*(i-(number_of_rows-30)));
+		
+		space[0][i][j][0] = space[0][i-1][j][0];
+		space[0][i][j][0] = space[0][i][j][0]-test2;
+		space[0][i][j][0] = space[0][i][j][0]-noise;
 
-      //cout<< space[0][i][j][0]<< endl;      
-
-      noise = rand () * (initial_gradient / 2.0);
-      noise = noise / 100000.0;
-      space[0][i][j][0] = space[0][i][j][0] + noise;
+		
       // check 1 total heights's declared?
-      //cout<< space[0][i][j][0]<< endl;
+     // cout<< space[0][i][j][0]<< endl;
 
       // fill with dh's for each grainsize class
       for (k = 1; k <= number_of_gscl; k++)
