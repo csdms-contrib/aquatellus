@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 void
-nrerror (char error_text[])
+nrerror (const char error_text[])
 //char error_text[];
 {
   //void exit();
