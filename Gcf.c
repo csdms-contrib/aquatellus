@@ -10,8 +10,19 @@ gcf (double *gammcf, double a, double x, double *gln)
 //double a,x,*gammcf,*gln;
 {
   int n;
-  double gold = 0.0, g, fac = 1.0, b1 = 1.0;
-  double b0 = 0.0, anf, ana, an, a1, a0 = 1.0;
+
+  double gold = 0.0,
+    g,
+    fac = 1.0,
+    b1 = 1.0;
+
+  double b0 = 0.0,
+    anf,
+    ana,
+    an,
+    a1,
+    a0 = 1.0;
+
   //double gammln();
   //void nrerror();
 
@@ -19,7 +30,7 @@ gcf (double *gammcf, double a, double x, double *gln)
   a1 = x;
   for (n = 1; n <= ITMAX; n++)
   {
-    an = (double) n;
+    an = (double)n;
     ana = an - a;
     a0 = (a1 + a0 * ana) * fac;
     b0 = (b1 + b0 * ana) * fac;

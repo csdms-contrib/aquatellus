@@ -10,26 +10,28 @@ using namespace std;
 /****************************************************************
  SWITCH	: this function determines whether a switch in the river or delta
  flowpath occurs at that specific timestep. Sofar, this is based on tstep
- and a random factor;(lit-reference: Bahr et al, 2000) but it might be done 
- more process based in future. Whenever a switch occurs a new flowpath 
- is calculated, with the FLOWPATH module. 
+ and a random factor;(lit-reference: Bahr et al, 2000) but it might be done
+ more process based in future. Whenever a switch occurs a new flowpath
+ is calculated, with the FLOWPATH module.
  ****************************************************************/
 double
 switch_flowpath ()
 {
   double noise2;
+
   noise2 = 1.0 * rand () / RAND_MAX;    //32767 is internaly defined for RAND_MAX
-  printf(" the noise for switch is %lf ", noise2);
+  printf (" the noise for switch is %lf ", noise2);
 
 //  int dt = 1;
-    // the time-step dependency is logarithmic
+  // the time-step dependency is logarithmic
   double switch_threshold = log10 (dt) / 2.0 + noise2;
+
   cout << "switch_threshold" << " " << switch_threshold << endl;
   return switch_threshold;
 }
 
 /****************************************************************************
- this determines which cell is the lowest cell in the adjacent cells to the 
+ this determines which cell is the lowest cell in the adjacent cells to the
  current cell. That cell is defined to be the cell to drain to
   **************************************************************************/
 
@@ -37,9 +39,15 @@ INTPAIR
 determine_lowest_cell (int t, INTPAIR actcel)
 {
   INTPAIR lowercel;
+
   double max;
+
   double d = 0.0;
-  int i, j, row_number, colum_number;
+
+  int i,
+    j,
+    row_number,
+    colum_number;
 
   row_number = actcel.row;
   colum_number = actcel.col;
@@ -66,12 +74,11 @@ determine_lowest_cell (int t, INTPAIR actcel)
             && (colum_number != colum_number + j))
         {
           d = d / sqrt (1);
-          // this is used to give preference to diagonal drainage; 
+          // this is used to give preference to diagonal drainage;
           //if sqrt (1) is given; reaction is a more sinuous flowpath
           // if sqrt (2) is given; reaction is a more straight flowpath
         }
-		  
-		  		  
+
       }
       if (d > max)
       {
@@ -80,17 +87,16 @@ determine_lowest_cell (int t, INTPAIR actcel)
         max = d;
         //cout<<"max = "<<max<<endl;
       }
-    }                           //forloop
-  }                             //forloop
+    }   //forloop
+  }     //forloop
 
-  if (lowercel.col == -1)//((lowercel.row == -1) && (lowercel.col == -1))
+  if (lowercel.col == -1)       //((lowercel.row == -1) && (lowercel.col == -1))
   {
     lowercel.row = actcel.row;
     lowercel.col = actcel.col;
   }
   return lowercel;
-}                               //end loop INTPAIR
-
+}       //end loop INTPAIR
 
 /******************************************************************************
 //the flowpath in the grid is determined based on the steepest descent algorithm
@@ -100,31 +106,33 @@ flowpath *
 determine_flowpath (int t)
 {
   flowpath *new_flowpath = new flowpath ();
-  INTPAIR current_cell, next_cell;
 
-
+  INTPAIR current_cell,
+    next_cell;
 
   current_cell.row = 0;
   // river starts in the top of the landscape in the middle cell
-  current_cell.col = (int) (floor (number_of_colums / 2));
+  current_cell.col = (int)(floor (number_of_colums / 2));
 
   //river starts not every timestep in the same cell
   double randpos = 10.0 * rand () / RAND_MAX;
-	printf(" the start node is %lf ", randpos);
+
+  printf (" the start node is %lf ", randpos);
 //      cout<<"randpos ="<<randpos<<endl;
-  current_cell.col += (int) randpos;
+  current_cell.col += (int)randpos;
 //
   new_flowpath->push_back (current_cell);
 
   cout << current_cell.row << " " << current_cell.col << endl;
 
   bool found = false;
+
   do
   {
     next_cell = determine_lowest_cell (t, current_cell);
 
     // boundary condition for 3 landscape-edges
-    // HIER NOG WEER NAAR KIJKEN 
+    // HIER NOG WEER NAAR KIJKEN
     if ((next_cell.row == current_cell.row) &&
         (next_cell.col == current_cell.col) ||
         (next_cell.row == number_of_rows - 1) ||
@@ -137,14 +145,12 @@ determine_flowpath (int t)
       new_flowpath->push_back (next_cell);
     }
 
-   cout << next_cell.row << " "<< next_cell.col << endl;
+    cout << next_cell.row << " " << next_cell.col << endl;
     current_cell = next_cell;
   }
   while (!found);
   return new_flowpath;
 }
-
-
 
 flowpath *
 get_flowpath (int t)
@@ -153,9 +159,10 @@ get_flowpath (int t)
 
   if ((switch_flowpath () > 0.4) || (t == 0))
 
-    //if(t==0) 
+    //if(t==0)
   {
     delete current_flowpath;
+
     current_flowpath = determine_flowpath (t);
     cout << "a new flowpath is determined" << endl;
   }

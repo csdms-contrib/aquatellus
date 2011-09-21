@@ -17,22 +17,27 @@
 #include "main.h"
 
 int i = 0;
-int k, l, m, n;
 
+int k,
+  l,
+  m,
+  n;
 
 double discharge_shapef = 0.005;
 
 double waterdepth = 0;
 
-
 double traveldist;
+
 double streampower;
+
 double erosion_power;
+
 double initload;                // the input sediment load at t=0 corrected for climate fluctuation
 
 double settle_rate;
-double **sedflux;
 
+double **sedflux;
 
 flowpath::iterator
 determine_coastline_cell (flowpath * current_flowpath, double sealevel,
@@ -42,6 +47,7 @@ determine_coastline_cell (flowpath * current_flowpath, double sealevel,
   for (i = current_flowpath->begin (); i != current_flowpath->end (); i++)
   {
     double spaceHeight = get_topo_height (sim_time, i->row, i->col);
+
     if (spaceHeight < sealevel)
       return i;
   }
@@ -55,30 +61,30 @@ determine_discharge_along_flowpath (flowpath * current_flowpath,
 {
   //DISCHARGE DETERMINATION
   double *discharge;
+
   if ((discharge =
-       (double *) calloc (current_flowpath->size () + 1,
-                          sizeof (double))) == NULL)
+       (double *)calloc (current_flowpath->size () + 1,
+                         sizeof (double))) == NULL)
     printf ("error in initializing discharge array");
 
   discharge[0] = discharge_def * climate_factor;
 
   flowpath::iterator i = current_flowpath->begin ();
-  i++;                          // discharge[0] is already defined (see above)
+  i++;  // discharge[0] is already defined (see above)
 
   int j = 1;
+
   // onshore
   for (; i != coastline_cell_index && i != current_flowpath->end (); i++, j++)
   {
     discharge[j] = discharge[j - 1];
   }
 
-
   for (; i != current_flowpath->end (); i++, j++)       // offshore
   {
     //erosion decreases with increasing waterdepth
     //this is mimicked by manipulating the discharge
     double waterdepth = sealevel - get_topo_height (sim_time, i->row, i->col);
-
 
     discharge[j] =
       discharge[j - 1] -
@@ -94,25 +100,26 @@ determine_discharge_along_flowpath (flowpath * current_flowpath,
   return discharge;
 }
 
-
 double *
 determine_erosion_rate_along_flowpath (flowpath * current_flowpath,
-                                       flowpath::
-                                       iterator coastline_cell_index,
+                                       flowpath::iterator coastline_cell_index,
                                        double *discharge, long sim_time)
 {
 
   // EROSION DETERMINATION (GRAINSIZE INDEPENDENT)
   double erosion_power = 1.0;
+
   double slope;
 
   double *dh_erosion;
+
   if ((dh_erosion =
-       (double *) calloc (current_flowpath->size () + 1,
-                          sizeof (double))) == NULL)
+       (double *)calloc (current_flowpath->size () + 1,
+                         sizeof (double))) == NULL)
     printf ("error in initializing dh_erosion array");
 
   int j = 0;
+
   // this flowpath iterator is necessary to look one cell forward
   // this is necessary to calculate the local slope
   flowpath::iterator nextCell = current_flowpath->begin ();
@@ -125,15 +132,14 @@ determine_erosion_rate_along_flowpath (flowpath * current_flowpath,
   {
     //erosion is slope independent in the marine domain
     // dit effect heb je nu natuurlijk niet!!
-    //if(i == coastline_cell_index) 
-    //{ 
-    // dit was erosion_power = 0.0; 
+    //if(i == coastline_cell_index)
+    //{
+    // dit was erosion_power = 0.0;
     //maar dat heeft niet zoveel zin als slope een getal kleiner dan 0 is
     // dan is het netto effect alleen maar dat de erosion depth kleiner wordt in
     // het fluviatiele gedeelte tov het mariene gedeelte
     //      erosion_power = 1.0;
     //}
-
 
     if (nextCell != current_flowpath->end ())
     {
@@ -141,9 +147,8 @@ determine_erosion_rate_along_flowpath (flowpath * current_flowpath,
         (get_topo_height (sim_time, i->row, i->col) -
          get_topo_height (sim_time, nextCell->row, nextCell->col)) / dx;
     }
-    // in this way the lower boundary condition for slope(at the end of the grid) is set 
+    // in this way the lower boundary condition for slope(at the end of the grid) is set
     // last slope = previous slope
-
 
     //erosion depends with a power function on local slope and discharge
     double streampower = discharge[j] * pow (slope, erosion_power);
@@ -151,6 +156,7 @@ determine_erosion_rate_along_flowpath (flowpath * current_flowpath,
     // the erosion constants in the equation are different
     // for the fluvial and marine environment
     double erosion_rate;
+
     if (i != coastline_cell_index)
     {
       erosion_rate = k_er_fluv * streampower;
@@ -164,41 +170,41 @@ determine_erosion_rate_along_flowpath (flowpath * current_flowpath,
 
     dh_erosion[j] = dt * erosion_rate;
 
-
   }
   return dh_erosion;
 }
-
-
-
 
 double **
 dig_erosion_from_space (flowpath * current_flowpath, double *dh_erosion,
                         long sim_time)
 {
   double **sedflux_ero;
+
   if ((sedflux_ero =
-       (double **) calloc (current_flowpath->size () + 1,
-                           sizeof (double *))) == NULL)
+       (double **)calloc (current_flowpath->size () + 1,
+                          sizeof (double *))) == NULL)
     printf ("error in initializing erosional sedflux array");
 
   for (int k = 0; k < current_flowpath->size () + 1; k++)
   {
     if ((sedflux_ero[k] =
-         (double *) calloc (number_of_gscl, sizeof (double))) == NULL)
+         (double *)calloc (number_of_gscl, sizeof (double))) == NULL)
       printf ("error in initializing erosional sedflux array");
   }
 
   //erosion is substracted from the space array
 
   int j = 0;
+
   for (flowpath::iterator i = current_flowpath->begin ();
        i != current_flowpath->end (); i++, j++)
   {
     bool done = false;
+
     for (long m = sim_time - 1; m >= 0 && !done; m--)
     {
       int height = space[m][i->row][i->col][0];
+
       if (height != 0)
       {
         if (height - dh_erosion[j] < 0)
@@ -239,15 +245,16 @@ sedimentation_rate_along_flowpath (flowpath * current_flowpath,
 {
 
   double **sedflux_depo;
+
   if ((sedflux_depo =
-       (double **) calloc (current_flowpath->size () + 1,
-                           sizeof (double *))) == NULL)
+       (double **)calloc (current_flowpath->size () + 1,
+                          sizeof (double *))) == NULL)
     printf ("error in initializing depositional sedflux array");
 
   for (int k = 0; k < current_flowpath->size () + 1; k++)
   {
     if ((sedflux_depo[k] =
-         (double *) calloc (number_of_gscl, sizeof (double))) == NULL)
+         (double *)calloc (number_of_gscl, sizeof (double))) == NULL)
       printf ("error in initializing depositional sedflux array");
   }
 
@@ -258,16 +265,17 @@ sedimentation_rate_along_flowpath (flowpath * current_flowpath,
 
   for (n = 0; n < number_of_gscl; n++)
   {
-    // calculate the distribution of the total load 
+    // calculate the distribution of the total load
     // over the different grainsize classes
     sedflux_depo[0][n] = sedflux_ero[0][n] + (initload * sed_cont_pct[n]);
   }
 
-
   flowpath::iterator i = current_flowpath->begin ();
-  i++;                          // sedflux_depo[0] is already defined (see above)
+  i++;  // sedflux_depo[0] is already defined (see above)
   int j = 1;
+
   double settle_rate;
+
   // onshore
   for (; i != coastline_cell_index && i != current_flowpath->end (); i++, j++)
   {
@@ -282,7 +290,7 @@ sedimentation_rate_along_flowpath (flowpath * current_flowpath,
 
   }
 
-  for (; i != current_flowpath->end (); i++, j++)       // offshore              
+  for (; i != current_flowpath->end (); i++, j++)       // offshore
   {
 
     for (n = 0; n < number_of_gscl; n++)

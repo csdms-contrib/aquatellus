@@ -1,12 +1,16 @@
 #include <stdio.h>
 void gcf (double *gammcf, double a, double x, double *gln);
+
 void gser (double *gamser, double a, double x, double *gln);
 
 double
 gammq (double a, double x)
 //double a,x;
 {
-  double gamser, gammcf, gln;
+  double gamser,
+    gammcf,
+    gln;
+
   //void gcf(),gser();//,nrerror();
 
   //if (x < 0.0 || a <= 0.0) nrerror("Invalid arguments in routine GAMMQ");

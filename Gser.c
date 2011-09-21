@@ -9,7 +9,10 @@ void
 gser (double *gamser, double a, double x, double *gln)
 {
   int n;
-  double sum, del, ap;
+
+  double sum,
+    del,
+    ap;
 
   *gln = gammln (a);
   if (x <= 0.0)

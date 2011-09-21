@@ -5,15 +5,21 @@
 
 typedef struct FCOMPLEX
 {
-  double r, i;
+  double r,
+    i;
 } fcomplex;
+
 typedef struct IMMENSE
 {
-  unsigned long l, r;
+  unsigned long l,
+    r;
 } immense;
+
 typedef struct GREAT
 {
-  unsigned short l, c, r;
+  unsigned short l,
+    c,
+    r;
 } great;
 
 extern "C"
@@ -173,8 +179,7 @@ extern "C"
   void polin2 (double *, double *, double **, int, int, double,
                double, double *, double *);
   void polint (double *, double *, int, double, double *, double *);
-  void powell (double *, double **, int, double, int *, double *,
-               double (*)());
+  void powell (double *, double **, int, double, int *, double *, double (*)());
   void predic (double *, int, double *, int, double *, int);
   double probks (double);
   void pzextr (int, double, double *, double *, double *, int, int);
@@ -328,8 +333,7 @@ extern "C"
   void difeq (int k, int k1, int k2, int jsf, int is1, int isf,
               int *indexv, int ne, double **s, double **y);
   void dlinmin (double *p, double *xi, int n, double *fret,
-                double (*func) (double *), void (*dfunc) (double *,
-                                                          double *));
+                double (*func) (double *), void (*dfunc) (double *, double *));
   void eclass (int *nf, int n, int *lista, int *listb, int m);
   void eclazz (int *nf, int n, int (*equiv) (int, int));
   void eigsrt (double *d, double **v, int n);
@@ -427,8 +431,7 @@ extern "C"
                              double, double *, double *, double *,
                              void (*)(double, double *, double *)));
   void pcshft (double a, double b, double *d, int n);
-  void pearsn (double *x, double *y, int n, double *r, double *prob,
-               double *z);
+  void pearsn (double *x, double *y, int n, double *r, double *prob, double *z);
   void piksr2 (int n, double *arr, double *brr);
   void piksrt (int n, double *arr);
   void pinvs (int ie1, int ie2, int je1, int jsf, int jc1, int k,
@@ -440,8 +443,7 @@ extern "C"
   void poldiv (double *u, int n, double *v, int nv, double *q, double *r);
   void polin2 (double *x1a, double *x2a, double **ya, int m, int n, double x1,
                double x2, double *y, double *dy);
-  void polint (double *xa, double *ya, int n, double x, double *y,
-               double *dy);
+  void polint (double *xa, double *ya, int n, double x, double *y, double *dy);
   void powell (double *p, double **xi, int n, double ftol, int *iter,
                double *fret, double (*func) (double *));
   void predic (double *data, int ndata, double *d, int npoles, double *future,
@@ -457,16 +459,14 @@ extern "C"
   void qroot (double *p, int n, double *b, double *c, double eps);
   double qsimp (double (*func) (double), double a, double b);
   double qtrap (double (*func) (double), double a, double b);
-  double quad3d (double (*func) (double, double, double), double x1,
-                 double x2);
+  double quad3d (double (*func) (double, double, double), double x1, double x2);
   double ran0 (int *idum);
   double ran1 (int *idum);
   double ran2 (long *idum);
   double ran3 (int *idum);
   double ran4 (int *idum);
   void rank (int n, int *indx, int *irank);
-  void ratint (double *xa, double *ya, int n, double x, double *y,
-               double *dy);
+  void ratint (double *xa, double *ya, int n, double x, double *y, double *dy);
   void realft (double *data, int n, int isign);
   void red (int iz1, int iz2, int jz1, int jz2, int jm1, int jm2, int jmf,
             int ic1, int jc1, int jcf, int kc, double ***c, double **s);
@@ -496,8 +496,7 @@ extern "C"
                double h1, double hmin, double *f, double *dv1, double *dv2);
   void simp1 (double **a, int mm, int *ll, int nll, int iabf, int *kp,
               double *bmax);
-  void simp2 (double **a, int n, int *l2, int nl2, int *ip, int kp,
-              double *q1);
+  void simp2 (double **a, int n, int *l2, int nl2, int *ip, int kp, double *q1);
   void simp3 (double **a, int i1, int k1, int ip, int kp);
   void simplx (double **a, int m, int n, int m1, int m2, int m3,
                int *icase, int *izrov, int *iposv);
@@ -520,10 +519,8 @@ extern "C"
                double **y2a);
   void splin2 (double *x1a, double *x2a, double **ya, double **y2a, int m,
                int n, double x1, double x2, double *y);
-  void spline (double *x, double *y, int n, double yp1, double ypn,
-               double *y2);
-  void splint (double *xa, double *ya, double *y2a, int n, double x,
-               double *y);
+  void spline (double *x, double *y, int n, double yp1, double ypn, double *y2);
+  void splint (double *xa, double *ya, double *y2a, int n, double x, double *y);
   void svbksb (double **u, double *w, double **v, int m, int n, double *b,
                double *x);
   void svdcmp (double **a, int m, int n, double *w, double **v);
@@ -541,8 +538,7 @@ extern "C"
               double *prob);
   void tutest (double *data1, int n1, double *data2, int n2, double *t,
                double *prob);
-  void twofft (double *data1, double *data2, double *fft1, double *fft2,
-               int n);
+  void twofft (double *data1, double *data2, double *fft1, double *fft2, int n);
   void vander (double *x, double *w, double *q, int n);
   int zbrac (double (*func) (double), double *x1, double *x2);
   void zbrak (double (*fx) (double), double x1, double x2, int n, double *xb1,

@@ -19,8 +19,6 @@
 #include "space.h"
 #include "flowpath.h"
 
-
-
 typedef struct {
 		int left_count;
 		int right_count;
@@ -32,7 +30,6 @@ COORPAIR * storage(flowpath * current_flowpath, double * discharge)
 	int k;
 	int fly;
 	int right_count,left_count, lat_width_right,lat_width_left;
-
 
 	
 	double A_cum; // the cumulative cross sectional discharge that can be stored
@@ -46,7 +43,6 @@ COORPAIR * storage(flowpath * current_flowpath, double * discharge)
 	//double right_bankh=0; // for right handside river bank height
 	//double left_bankh =0; // for left handside river bank height
 
-
 	int j=0;
 	for (flowpath::iterator i = current_flowpath->begin(); i != current_flowpath->end (); i++, j++)
 	 {
@@ -59,7 +55,7 @@ COORPAIR * storage(flowpath * current_flowpath, double * discharge)
 
 	
 	// loop runs as long as the stored discharge is less than the total cross sectional Q
-	while (A_cum< discharge[j]) 
+	while (A_cum< discharge[j])
 	{
 			// determine the riverbed
 		    while (get_space_height(sim_time, i->row, right_count) <= waterlevel_height)
@@ -69,14 +65,14 @@ COORPAIR * storage(flowpath * current_flowpath, double * discharge)
 			left_count--;
 			
 			// determine whether rightside is the lowest riverbank					
-			if (get_space_height(sim_time, i->row,right_count) <= get_space_height(sim_time, i->row,left_count)) 
+			if (get_space_height(sim_time, i->row,right_count) <= get_space_height(sim_time, i->row,left_count))
 				{
 					waterlevel_height = get_space_height (sim_time, i->row, right_count);
 
 					// from right riverbank onwards the cross-sectional storage is
 					// calculated untill the leftbank is reached
 					for (int k = right_count-1; k>left_count; k --)
-					{A_cum += ((waterlevel_height- get_space_height(sim_time, i->row,k))* dy);} 
+					{A_cum += ((waterlevel_height- get_space_height(sim_time, i->row,k))* dy);}
 
 				} //endif
 
@@ -91,25 +87,25 @@ COORPAIR * storage(flowpath * current_flowpath, double * discharge)
 					}
 						
  				
-					if (A_cum > discharge[j])  break; 
+					if (A_cum > discharge[j])  break;
 					
 					// each step all area under the waterlevel unto the topographical
 					// height is calculated, thus the A_cum has to be set back to 0
 
 					A_cum =0;
- 
+
 				
 
 	}// end of while loop
-        
-	    
+
+	
         lat_width_left = fly - left_count;
 		lat_width_right = right_count -fly;
 	//	cout <<lat_width_left<< " "<<  lat_width_right<< endl;
 
 		
 		//printf(" %d %d \n", curve_width.left_count, curve_width.right_count);
-        return curve_width; 
+        return curve_width;
 
 	}
 
