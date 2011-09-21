@@ -21,6 +21,10 @@ set (aquatellus_srcs
      ei.cpp
      Gammln.c
      storage2.cpp
+     aquatellus_init_func.cpp
+     run_aquatellus.cpp
+     aquatellus_finalize.cpp
+     aquatellusreadinput.cpp
      Gammp.c)
 
 add_executable (aquatellus ${aquatellus_srcs})
