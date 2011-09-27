@@ -1,0 +1,24 @@
+*****************************************************************
+AQUATELLUS INPUT PARAMETERS
+*****************************************************************
+2	simulation time
+1	time step
+150	number of grid rows
+150	number of grid columns
+1	grid cell dx
+1	grid cell dy
+100.0 initial height at upstream end of the river floodplain
+0.1	initial river floodplain gradient
+0.5	initial marine gradient
+3	number of grain size classes
+0.6 0.4 0.004 grain size in mm
+0.33 0.33 0.33 percentage in each grain size class
+800 4000 6000 travel distance in fluvial domain
+5000 20000 40000 travel distance in marine domain
+0.0005	erosion proportionality constant in fluvial domain
+0.00001	erosion proportionality constant in marine domain
+200	initial incoming river discharge
+0.02	initial incoming river sediment load
+86.0	sea level at beginning of simulation in m
+4.0	sea level sine function amplitude in m
+800	sea level period in timesteps
