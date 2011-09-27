@@ -30,8 +30,6 @@
 #include "ei.h"
 #include "aquatellus_init_func.h"
 #include "aquatellusreadinput.h"
-#include "run_aquatellus.h"
-#include "aquatellus_finalize.h"
 
 #include "bmi.h"
 

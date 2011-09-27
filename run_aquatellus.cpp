@@ -27,8 +27,6 @@
 #include "ei.h"
 #include "aquatellus_init_func.h"
 #include "aquatellusreadinput.h"
-#include "aquatellus_finalize.h"
-#include "run_aquatellus.h"
 
 #include "bmi.h"
 

@@ -7,7 +7,6 @@
  *
  */
 
-#include "aquatellus_finalize.h"
 #include "aquatellus.h"
 #include "output.h"
 #include "main.h"
