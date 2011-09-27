@@ -27,6 +27,8 @@ set (aquatellus_srcs
      aquatellusreadinput.cpp
      Gammp.c)
 
+set_source_files_properties (${aquatellus_srcs} PROPERTIES LANGUAGE CXX)
+
 add_executable (aquatellus ${aquatellus_srcs})
 
 install (TARGETS aquatellus DESTINATION bin)
