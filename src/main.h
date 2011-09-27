@@ -60,10 +60,13 @@ extern double climate_factor;
 // globals for erosion and sedimentation calculations
 extern int coastline_cell;
 
-extern int Xpos;
+//extern int Xpos;
+#define XPOS (8)
 
-extern int wellpos_row;
+//extern int wellpos_row;
+#define WELLPOS_ROW (45)
 
-extern int wellpos_col;
+//extern int wellpos_col;
+#define WELLPOS_COL (85)
 
 #endif

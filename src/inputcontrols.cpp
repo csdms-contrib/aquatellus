@@ -17,6 +17,9 @@ using namespace std;
 // is not that important
 ///////////////////////////////////////////////////////////////////////////////////
 
+double climate_factor;
+double sealevel;
+
 double
 get_random_climate_factor ()
 {

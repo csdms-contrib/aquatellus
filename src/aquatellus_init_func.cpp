@@ -12,6 +12,8 @@
 
 using namespace std;
 
+long sim_time;
+
 void*
 BMI_Initialize (const char* file)
 {
