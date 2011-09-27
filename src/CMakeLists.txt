@@ -32,8 +32,6 @@ set (aquatellus_lib_srcs
 
 add_library (aquatellus ${aquatellus_lib_srcs})
 install (TARGETS aquatellus DESTINATION lib COMPONENT aquatellus)
-#install (TARGETS bmi.h DESTINATION include RENAME aquatellus_bmi.h
-#  COMPONENT aquatellus)
 install (FILES bmi.h DESTINATION include COMPONENT aquatellus RENAME aquatellus_bmi.h)
 
 ### The aquatellus executable
@@ -41,7 +39,7 @@ install (FILES bmi.h DESTINATION include COMPONENT aquatellus RENAME aquatellus_
 set (aquatellus_exe_srcs aquatellus.cpp)
 add_executable (aquatellus_exe ${aquatellus_exe_srcs})
 target_link_libraries (aquatellus_exe aquatellus)
-install (TARGETS aquatellus DESTINATION bin RENAME aquatellus
+install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/aquatellus_exe DESTINATION bin RENAME aquatellus
   COMPONENT aquatellus)
 
 
