@@ -30,6 +30,8 @@
 #include "aquatellus_finalize.h"
 #include "run_aquatellus.h"
 
+#include "bmi.h"
+
 using namespace std;
 
 FILE *ftopo;
@@ -37,7 +39,7 @@ FILE *ftopo;
 FILE *fpath;
 
 void
-run_aquatellus ()
+BMI_Run_model (void * self)
 {
   printf ("simtime=%d\n", sim_time);
   // FILE I/O

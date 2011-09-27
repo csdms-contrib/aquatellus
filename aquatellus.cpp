@@ -33,6 +33,8 @@
 #include "run_aquatellus.h"
 #include "aquatellus_finalize.h"
 
+#include "bmi.h"
+
 using namespace std;
 
 // time & grid dimensions
@@ -113,7 +115,7 @@ main ()
   printf ("Reading Aquatellus Input file\n");
   printf ("Initializing DEM and Sediment Grid\n");
 
-  aquatellus_init_func ();
+  BMI_Initialize (NULL);
 
   // TIME LOOP
 
@@ -122,7 +124,8 @@ main ()
 
   {
 
-    run_aquatellus ();
+    //run_aquatellus ();
+    BMI_Run_model (NULL);
 
     if (sim_time >= end_of_times)
     {
@@ -133,7 +136,8 @@ main ()
 
   }     //end of simulation time loop
 
-  aquatellus_finalize ();
+  //aquatellus_finalize ();
+  BMI_Finalize (NULL);
 
   return 0;
 
