@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd @CMAKE_CURRENT_BINARY_DIR@ && @AQUATELLUS_EXE@
+
+test_files="eroflux.txt finalflux.txt"
+for f in $test_files; do
+  diff @CMAKE_CURRENT_BINARY_DIR@/$f @CMAKE_CURRENT_SOURCE_DIR@/$f
+done
+
