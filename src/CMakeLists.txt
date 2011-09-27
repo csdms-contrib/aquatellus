@@ -32,6 +32,9 @@ set (aquatellus_lib_srcs
 
 add_library (aquatellus ${aquatellus_lib_srcs})
 install (TARGETS aquatellus DESTINATION lib COMPONENT aquatellus)
+#install (TARGETS bmi.h DESTINATION include RENAME aquatellus_bmi.h
+#  COMPONENT aquatellus)
+install (FILES bmi.h DESTINATION include COMPONENT aquatellus RENAME aquatellus_bmi.h)
 
 ### The aquatellus executable
 
