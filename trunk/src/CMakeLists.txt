@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 
 project (aquatellus)
 
-set (BUILD_SHARED_LIBS OFF)
+set (BUILD_SHARED_LIBS ON)
 
-set (aquatellus_srcs
-     aquatellus.cpp
+set_source_files_properties (${aquatellus_srcs} PROPERTIES LANGUAGE CXX)
+
+### The aquatellus library
+
+set (aquatellus_lib_srcs
      Erf.c
      Gammq.c
      expon_int.cpp
@@ -27,14 +30,20 @@ set (aquatellus_srcs
      aquatellusreadinput.cpp
      Gammp.c)
 
-set_source_files_properties (${aquatellus_srcs} PROPERTIES LANGUAGE CXX)
+add_library (aquatellus ${aquatellus_lib_srcs})
+install (TARGETS aquatellus DESTINATION lib COMPONENT aquatellus)
 
-add_executable (aquatellus ${aquatellus_srcs})
+### The aquatellus executable
 
-install (TARGETS aquatellus DESTINATION bin)
+set (aquatellus_exe_srcs aquatellus.cpp)
+add_executable (aquatellus_exe ${aquatellus_exe_srcs})
+target_link_libraries (aquatellus_exe aquatellus)
+install (TARGETS aquatellus DESTINATION bin RENAME aquatellus
+  COMPONENT aquatellus)
+
 
 set (MAJOR_VERSION 1)
-set (MINOR_VERSION 0)
+set (MINOR_VERSION 1)
 set (RELEASE_VERSION 0)
 
 set (CPACK_PACKAGE_NAME aquatellus)
