@@ -27,6 +27,4 @@ int define_space (int number_of_time_steps, int number_of_rows,
 void initialize_space (double initial_height, double initial_gradient,
                        double offshore_gradient);
 
-void aquatellus_init_func ();
-
 #endif
