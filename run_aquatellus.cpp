@@ -39,7 +39,7 @@ FILE *fpath;
 void
 BMI_Run_model (void * self)
 {
-  printf ("simtime=%d\n", sim_time);
+  printf ("simtime=%ld\n", sim_time);
   // FILE I/O
   open_data_files (&ftopo, &fpath, sim_time);
 
