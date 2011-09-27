@@ -42,8 +42,8 @@ aquatellusreadinput ()
 
     //SIMULATION TIME SETTINGS
     // read simulation time
-    fscanf (inp, "%d", &end_of_times);
-    printf ("simulation time = %d\n", end_of_times);
+    fscanf (inp, "%ld", &end_of_times);
+    printf ("simulation time = %ld\n", end_of_times);
     fflush (stdout);
     fgets (chs, 150, inp);
 
