@@ -8,10 +8,12 @@
 #include "Space.h"
 #include "main.h"
 
+#include "bmi.h"
+
 using namespace std;
 
-void
-aquatellus_init_func ()
+void*
+BMI_Initialize (const char* file)
 {
 
   //READ INPUT
@@ -36,4 +38,6 @@ aquatellus_init_func ()
   // step 2 initialize the actual values that fill the SEDIMENT GRID and define the topography/bathymetry
   initialize_space (initial_height, initial_gradient, offshore_gradient);
 
+  return NULL;
 }
+

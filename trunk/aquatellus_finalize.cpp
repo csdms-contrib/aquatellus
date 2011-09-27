@@ -12,8 +12,10 @@
 #include "output.h"
 #include "main.h"
 
+#include "bmi.h"
+
 void
-aquatellus_finalize ()
+BMI_Finalize (void* self)
 {
   // POST-PROCESSING OF THE DATA CUBE
 
