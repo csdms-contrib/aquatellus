@@ -36,7 +36,7 @@
 using namespace std;
 
 // time & grid dimensions
-
+/*
 long end_of_times = 200;
 
 int dt = 1;
@@ -77,9 +77,9 @@ double sea_lvl_ref = 80;        // average level around which fluctuations occur
 double sea_lvl_amp = 0;         // amplitude in m
 
 double sea_lvl_prd = 100;       // period of the sine function in years
-
+*/
 // some specifications for output
-int Xpos = 8;                   //position at which Xsection for output is made
+//int Xpos = 8;                   //position at which Xsection for output is made
 
 int num_outp = 20;              // number of times that topography file gets written away
 
@@ -98,11 +98,11 @@ double *firstder;
 
 COORPAIR curve_width;
 
-long sim_time;
+//long sim_time;
 
-double sealevel;
+//double sealevel;
 
-double climate_factor;
+//double climate_factor;
 
 ///////////////////// THE ACTUAL SIMULATION//////////////////////////////////
 int

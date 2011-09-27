@@ -16,6 +16,29 @@
 #include <stdio.h>
 #include <string.h>
 
+long end_of_times = 200;
+int dt = 1;
+int number_of_time_steps = end_of_times / dt;
+int number_of_rows = 1;
+int number_of_colums = 1;
+int dx = 1;
+int dy = 1;
+double initial_height = 0.0;    // starting height at the upstream end of the grid
+double initial_gradient = 0.0;  // initial gradient in longitudinal direction in river floodplain
+double offshore_gradient = 0.0; // initial gradient in longitudinal direction in offshore floodplain
+int number_of_gscl = 3;         // number of grain size classes
+double grain_size[] = { 0.0, 0.0, 0.0 };        // grainsizes in mm, coarse to fine
+double sed_cont_pct[] = { 0.33, 0.33, 0.33 };   //percentage of each grainsize
+double traveldist_fluvial[] = { 220, 230, 270 };        //{ 220, 250, 270, 320 };   // from coarse to fine, set originally { 220, 230, 2 50, 270 }
+double traveldist_marine[] = { 50, 60, 120 };   //from fine to coarse {50,60,80,120};
+double k_er_fluv = 0.0005;      //0.0000050; //used in experi 1;
+double k_er_marine = 0.00001;
+double discharge_def = 200;
+double sediment_load_def = 0.02;        // the given input sediment load at t=0
+double sea_lvl_ref = 80;        // average level around which fluctuations occur, reference sea level at t=0
+double sea_lvl_amp = 0;         // amplitude in m
+double sea_lvl_prd = 100;       // period of the sine function in years
+
 void
 aquatellusreadinput ()
 {
