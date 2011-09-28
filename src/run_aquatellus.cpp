@@ -36,8 +36,32 @@ FILE *ftopo;
 
 FILE *fpath;
 
+double
+BMI_Get_start_time (void * self)
+{
+  return 0.;
+}
+
+double
+BMI_Get_end_time (void * self)
+{
+  return end_of_times;
+}
+
+double
+BMI_Get_current_time (void * self)
+{
+  return sim_time;
+}
+
+const char *
+BMI_Get_time_units (void * self)
+{
+  return "years";
+}
+
 void
-BMI_Run_model (void * self)
+BMI_Update (void * self)
 {
   printf ("simtime=%ld\n", sim_time);
   // FILE I/O
@@ -169,5 +193,7 @@ BMI_Run_model (void * self)
   //      free(asymmetry);
 
   close_data_files (&ftopo, &fpath);
+
+  sim_time += dt;
 
 }
