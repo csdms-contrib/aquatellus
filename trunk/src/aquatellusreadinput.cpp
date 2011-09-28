@@ -18,7 +18,7 @@
 
 long end_of_times = 200;
 int dt = 1;
-int number_of_time_steps = end_of_times / dt;
+int number_of_time_steps = 0;
 int number_of_rows = 1;
 int number_of_colums = 1;
 int dx = 1;
@@ -75,6 +75,8 @@ aquatellusreadinput ()
     printf ("timestep = %d\n", dt);
     fflush (stdout);
     fgets (chs, 150, inp);
+
+    number_of_time_steps = end_of_times / dt;
 
     // READ GRID DIMENSIONS PARAMETERS
 
