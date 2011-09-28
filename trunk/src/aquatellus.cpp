@@ -117,22 +117,10 @@ main ()
 
   // TIME LOOP
 
-  sim_time = 0;
-  while (sim_time < end_of_times)
-
+  while (BMI_Get_current_time (NULL)<BMI_Get_end_time (NULL))
   {
-
-    //run_aquatellus ();
-    BMI_Run_model (NULL);
-
-    if (sim_time >= end_of_times)
-    {
-      printf ("end of programme\n");
-    }
-    //printf("simtime=%d\n",sim_time);
-    sim_time += dt;
-
-  }     //end of simulation time loop
+    BMI_Update (NULL);
+  }
 
   //aquatellus_finalize ();
   BMI_Finalize (NULL);
